@@ -14,4 +14,4 @@ If you are developing a production application, we recommend using TypeScript wi
 =======
 # supritec-lp
 LP SOLUCAO PARA A EMPRESA
->>>>>>> 3739f4cc6c98db19b559532e9644fa9f8ea58b0a
+
