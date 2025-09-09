@@ -13,7 +13,7 @@
   --orange-500: #fb923c;
 }
 
-/* Reset e corpo da página */
+/* ================= RESET E CORPO ================= */
 html, body {
   height: 100%;
   margin: 0;
@@ -27,49 +27,81 @@ body {
   min-height: 100vh;
 }
 
-/* Container principal */
-.app-container {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
+/* ================= NAV FIXO ================= */
+.app-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  flex: 1;
+  height: 45px;
+  background-color: #1e1e1e;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center; 
+  gap: 20px;
+  padding: 0; 
+  z-index: 1000;
+  font-weight: bold;
+  font-size: 15px;
 }
 
-/* Header */
+.app-nav a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 15px;
+  transition: color 0.3s;
+}
+
+.app-nav a:hover {
+  color: #4caf50;
+}
+
+/* ================= HEADER VERDE ================= */
 .app-header {
   background-color: var(--green-700);
   color: var(--white);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   position: sticky;
-  top: 0;
-  z-index: 10;
-  padding: 1.5rem;
+  top: 45px; /* colado ao nav */
+  z-index: 900;
+  padding: 1rem;
   text-align: center;
 }
 
 .app-header h1 {
   margin: 0;
-  font-size: 1.8rem;
+  font-size: 1.6rem;
 }
 
 .app-header input {
-  margin-top: 12px;
-  padding: 10px;
-  width: 300px;
+  margin-top: 10px;
+  padding: 8px;
+  width: 280px;
   border: none;
   border-radius: 6px;
-  font-size: 1rem;
+  font-size: 0.95rem;
 }
 
-/* Conteúdo principal */
+/* ================= CONTEÚDO PRINCIPAL ================= */
+.app-container,
+.comparador-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  flex: 1;
+  box-sizing: border-box;
+  padding-top: 45px; /* Adicionado para resolver o problema de sobreposição */
+}
+
 .app-main {
   padding: 2rem;
   flex: 1;
   box-sizing: border-box;
 }
 
-/* Grid de produtos */
+/* ================= GRID DE PRODUTOS ================= */
 .grid-container {
   display: grid;
   gap: 2.5rem;
@@ -77,7 +109,7 @@ body {
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
 }
 
-/* Cards de produtos */
+/* ================= CARDS DE PRODUTOS ================= */
 .card-produto {
   background-color: var(--white);
   border-radius: 16px;
@@ -119,7 +151,7 @@ body {
 
 .preco-psd {
   color: var(--green-600);
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: 0.25rem;
 }
 
@@ -159,7 +191,7 @@ body {
   grid-column: 1 / -1;
 }
 
-/* Botão flutuante do chat */
+/* ================= CHAT ================= */
 .chat-toggle {
   position: fixed;
   bottom: 20px;
@@ -181,7 +213,6 @@ body {
   background: var(--green-600);
 }
 
-/* Popup do chat */
 .chat-popup {
   position: fixed;
   bottom: 90px;
@@ -198,7 +229,6 @@ body {
   font-family: 'Arial', sans-serif;
 }
 
-/* Header do chat */
 .chat-popup-header {
   background: var(--green-700);
   color: var(--white);
@@ -221,7 +251,6 @@ body {
   cursor: pointer;
 }
 
-/* Corpo do chat */
 .chat-body {
   flex: 1;
   padding: 12px;
@@ -232,7 +261,6 @@ body {
   gap: 10px;
 }
 
-/* Mensagens */
 .chat-message {
   max-width: 80%;
   padding: 8px 12px;
@@ -253,18 +281,6 @@ body {
   text-align: left;
 }
 
-.chat-author {
-  display: block;
-  font-weight: bold;
-  font-size: 0.85rem;
-  margin-bottom: 2px;
-}
-
-.chat-text {
-  font-size: 0.95rem;
-}
-
-/* Footer do chat */
 .chat-footer {
   display: flex;
   padding: 10px;
@@ -293,7 +309,6 @@ body {
   background-color: var(--green-600);
 }
 
-/* Scrollbar customizado */
 .chat-body::-webkit-scrollbar {
   width: 8px;
 }
@@ -305,4 +320,94 @@ body {
 
 .chat-body::-webkit-scrollbar-track {
   background: #e5e7eb;
+}
+
+/* ================= BOTOES ================= */
+.btn-copiar {
+  margin-top: 10px;
+  padding: 6px 12px;
+  background: var(--green-700);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-copiar:hover {
+  background: var(--green-600);
+}
+
+.btn-darkmode {
+  margin-left: 1rem;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  background: var(--gray-600);
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-darkmode:hover {
+  background: var(--gray-800);
+}
+
+/* ================= DARK MODE ================= */
+.app-container.dark {
+  background: #121212;
+  color: #f5f5f5;
+}
+
+.app-container.dark .card-produto {
+  background: #1e1e1e;
+  color: #f5f5f5;
+  box-shadow: 0 4px 12px rgba(255,255,255,0.1);
+}
+
+.app-container.dark .card-titulo {
+  color: #90ee90;
+}
+
+.app-container.dark .preco-psd {
+  color: #4caf50;
+}
+
+.app-container.dark .preco-pscf {
+  color: #82b1ff;
+}
+
+.app-container.dark .chat-popup {
+  background: #1e1e1e;
+  color: #f5f5f5;
+}
+
+.dark .app-nav {
+  background-color: #121212;
+}
+
+.dark .app-nav a:hover {
+  color: #81c784;
+}
+
+/* ================= LINKS & HIGHLIGHT ================= */
+.link-substituto {
+  color: var(--green-700);
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.link-substituto:hover {
+  color: var(--green-600);
+}
+
+.highlight {
+  animation: blink 0.5s alternate 4;
+  border: 2px solid var(--green-600);
+}
+
+@keyframes blink {
+  from { background: var(--green-100); }
+  to { background: var(--white); }
 }

@@ -1,32 +1,47 @@
-import React, { useState } from "react";
+// ChatAssistente.jsx
+import React, { useState, useEffect } from "react";
 
-export default function ChatAssistente({ onClose }) {
+export default function ChatAssistente({ onClose, initialMessage }) {
   const [mensagem, setMensagem] = useState("");
   const [respostas, setRespostas] = useState([]);
 
   // URL do backend (pega do .env)
   const API_URL = import.meta.env.VITE_API_URL;
 
-  const enviarMensagem = async () => {
-    if (!mensagem.trim()) return;
+  const enviarMensagem = async (msg) => {
+    // Usa a mensagem passada como argumento ou a mensagem do estado
+    const messageToSend = msg || mensagem;
+    if (!messageToSend.trim()) return;
 
-    const novaConversa = [...respostas, { autor: "Você", texto: mensagem }];
+    // Adiciona a mensagem do usuário à conversa
+    const novaConversa = [...respostas, { autor: "Você", texto: messageToSend }];
     setRespostas(novaConversa);
-    setMensagem("");
+    // Limpa o input apenas se a mensagem veio do input (não do initialMessage)
+    if (!msg) {
+        setMensagem("");
+    }
 
     try {
       const res = await fetch(`${API_URL}/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: mensagem }),
+        body: JSON.stringify({ message: messageToSend }),
       });
 
       const data = await res.json();
       setRespostas([...novaConversa, { autor: "Assistente", texto: data.reply }]);
     } catch (error) {
+      console.error("Erro ao conectar com servidor.", error);
       setRespostas([...novaConversa, { autor: "Assistente", texto: "Erro ao conectar com servidor." }]);
     }
   };
+
+  // Usa useEffect para enviar a mensagem inicial assim que o componente é montado
+  useEffect(() => {
+    if (initialMessage) {
+      enviarMensagem(initialMessage);
+    }
+  }, [initialMessage]); // Roda apenas quando initialMessage muda
 
   return (
     <div className="chat-popup">
@@ -51,7 +66,7 @@ export default function ChatAssistente({ onClose }) {
           placeholder="Digite sua dúvida..."
           onKeyDown={(e) => e.key === "Enter" && enviarMensagem()}
         />
-        <button onClick={enviarMensagem}>Enviar</button>
+        <button onClick={() => enviarMensagem()}>Enviar</button>
       </div>
     </div>
   );

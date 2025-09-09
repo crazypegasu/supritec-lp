@@ -25,3 +25,5 @@ dist-ssr
 
 # env da chave do gpt
 .env
+
+README.md
