@@ -1,4 +1,3 @@
-// ChatAssistente.jsx
 import React, { useState, useEffect } from "react";
 
 export default function ChatAssistente({ onClose, initialMessage }) {
@@ -8,17 +7,18 @@ export default function ChatAssistente({ onClose, initialMessage }) {
   // URL do backend (pega do .env)
   const API_URL = import.meta.env.VITE_API_URL;
 
+  // Lógica para enviar a mensagem
   const enviarMensagem = async (msg) => {
     // Usa a mensagem passada como argumento ou a mensagem do estado
     const messageToSend = msg || mensagem;
     if (!messageToSend.trim()) return;
 
-    // Adiciona a mensagem do usuário à conversa
+    // Adiciona a mensagem do usuário ao estado
     const novaConversa = [...respostas, { autor: "Você", texto: messageToSend }];
     setRespostas(novaConversa);
     // Limpa o input apenas se a mensagem veio do input (não do initialMessage)
     if (!msg) {
-        setMensagem("");
+      setMensagem("");
     }
 
     try {
@@ -36,12 +36,28 @@ export default function ChatAssistente({ onClose, initialMessage }) {
     }
   };
 
-  // Usa useEffect para enviar a mensagem inicial assim que o componente é montado
+  // Efeito para buscar o histórico e enviar a mensagem inicial
   useEffect(() => {
+    // Função para buscar o histórico
+    const carregarHistorico = async () => {
+      try {
+        // Assume que você tem uma API para buscar o histórico de chat
+        const res = await fetch(`${API_URL}/api/chat/history`);
+        const data = await res.json();
+        setRespostas(data.history || []);
+      } catch (err) {
+        console.error("Erro ao buscar histórico:", err);
+      }
+    };
+    
+    carregarHistorico();
+
+    // Se houver uma mensagem inicial, a envia após o histórico carregar
+    // A lógica de "carregar e depois enviar" é crucial para a ordem das mensagens
     if (initialMessage) {
       enviarMensagem(initialMessage);
     }
-  }, [initialMessage]); // Roda apenas quando initialMessage muda
+  }, [initialMessage, API_URL]); // O efeito roda quando a mensagem inicial ou a URL da API mudam
 
   return (
     <div className="chat-popup">

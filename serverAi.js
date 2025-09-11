@@ -4,12 +4,44 @@ import fetch from "node-fetch";
 import cors from "cors";
 import fs from "fs";
 import { parse } from "csv-parse/sync";
+import path from "path";
+import { fileURLToPath } from "url";
 
 dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// 🔹 Armazena histórico de chat em memória
+let historico = [];
+
+// 🔹 Função para carregar o histórico do arquivo JSON ao iniciar o servidor
+function carregarHistoricoDoArquivo() {
+  const logFilePath = path.join(__dirname, "chat_logs.json");
+  if (fs.existsSync(logFilePath)) {
+    try {
+      const fileContent = fs.readFileSync(logFilePath, "utf-8");
+      // Filtra linhas vazias e faz o parse de cada linha JSON
+      const logs = fileContent
+        .trim()
+        .split("\n")
+        .filter((line) => line)
+        .map((line) => JSON.parse(line));
+      
+      // Filtra logs que contêm 'pergunta' e 'resposta' para o chat
+      historico = logs.filter(log => log.pergunta && log.resposta);
+
+      console.log("✅ Histórico de chat carregado do arquivo.");
+    } catch (err) {
+      console.error("Erro ao carregar histórico do arquivo:", err);
+    }
+  }
+}
+carregarHistoricoDoArquivo();
 
 // 🔹 Carregar produtos encerrados (CSV)
 let encerrados = [];
@@ -70,6 +102,51 @@ async function buscarNoWolfram(query) {
   }
 }
 
+// 🆕 Rota de autenticação para o painel de admin
+app.post("/api/login", (req, res) => {
+  const { username, password } = req.body;
+  if (username === "admin" && password === "12345") {
+    res.json({ success: true, message: "Login successful!" });
+  } else {
+    res.status(401).json({ success: false, message: "Invalid credentials." });
+  }
+});
+
+// 🆕 Rota para obter os logs de chat
+app.get("/api/chat-logs", (req, res) => {
+  const logFilePath = path.join(__dirname, "chat_logs.json");
+
+  if (fs.existsSync(logFilePath)) {
+    try {
+      const fileContent = fs.readFileSync(logFilePath, "utf-8");
+      const logs = fileContent
+        .trim()
+        .split("\n")
+        .filter((line) => line)
+        .map((line) => JSON.parse(line));
+      res.json(logs);
+    } catch (err) {
+      console.error("Error reading or parsing chat logs:", err);
+      res.status(500).json({ error: "Failed to read logs." });
+    }
+  } else {
+    res.status(404).json({ error: "Log file not found." });
+  }
+});
+
+// 🆕 Rota para buscar o histórico de chat para o front-end
+app.get("/api/chat/history", (req, res) => {
+  // Converte o histórico salvo em memória (pergunta/resposta) para o formato { autor, texto }
+  const historicoFormatado = histor
+  ico.flatMap(log => [
+    { autor: "Você", texto: log.pergunta },
+    { autor: "Assistente", texto: log.resposta }
+  ]);
+
+  res.json({ history: historicoFormatado });
+});
+
+// 🔹 Rota principal do chat
 app.post("/api/chat", async (req, res) => {
   try {
     const { message } = req.body;
@@ -144,6 +221,8 @@ app.post("/api/chat", async (req, res) => {
     // log
     const log = { pergunta: message, resposta, origem, data: new Date().toISOString() };
     fs.appendFileSync("chat_logs.json", JSON.stringify(log) + "\n");
+    // 🆕 Adiciona a mensagem ao histórico em memória para respostas instantâneas
+    historico.push(log);
 
     res.json({ reply: resposta, origem });
   } catch (error) {

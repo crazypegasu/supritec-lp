@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import ChatAssistente from "./ChatAssistente";
 import Comparador from "./Comparador";
+import AdminDashboard from "./adminDashboard"; // Importe o novo componente
 
 // Componente CardProduto
 const CardProduto = ({ produto, tipo, refsMap }) => {
@@ -94,7 +95,7 @@ function Catalogo() {
 
   // Carregar produtos Intelbras
   useEffect(() => {
-    fetch("produtos_intelbras.json")
+    fetch("produtos_intelbras_september.json")
       .then((res) => res.json())
       .then((data) => setProdutosIntelbras(data));
   }, []);
@@ -212,15 +213,19 @@ function Catalogo() {
 }
 
 // App com rotas
+// App com rotas
 export default function App() {
   return (
     <Router>
       <nav className="app-nav">
-        <Link to="/">🏠 Catálogo</Link> | <Link to="/comparador">🔎 Comparador</Link>
+        <Link to="/">🏠 Catálogo</Link> | 
+        <Link to="/comparador">🔎 Comparador</Link> |
+        <Link to="/admin">🔑 Admin</Link> {/* NOVO LINK */}
       </nav>
       <Routes>
         <Route path="/" element={<Catalogo />} />
         <Route path="/comparador" element={<Comparador />} />
+        <Route path="/admin" element={<AdminDashboard />} /> {/* NOVA ROTA */}
       </Routes>
     </Router>
   );

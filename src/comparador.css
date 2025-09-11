@@ -1,0 +1,195 @@
+/* Estilo geral do container */
+.comparador-container {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background-color: #f4f7f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 1200px;
+  margin: 20px auto;
+}
+
+.comparador-container h2 {
+  color: #333;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Estilo para a barra de pesquisa */
+.comparador-search-input {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+  box-sizing: border-box; 
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.comparador-search-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Estilo para a tabela de comparação */
+.comparador-tabela-comparacao {
+  margin-bottom: 20px;
+  overflow-x: auto;
+}
+
+.comparador-tabela-comparacao table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  table-layout: fixed; /* NOVO: Garante que as larguras das colunas serão fixas */
+}
+
+.comparador-tabela-comparacao th,
+.comparador-tabela-comparacao td {
+  padding: 12px 15px;
+  text-align: left;
+  border: 1px solid #e0e6eb;
+  word-wrap: break-word; /* NOVO: Quebra a palavra se for muito longa */
+}
+
+.comparador-tabela-comparacao th {
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+  position: relative;
+  vertical-align: top; /* NOVO: Alinha o conteúdo ao topo */
+}
+
+/* NOVO: Estilo para a célula de cabeçalho do produto */
+.comparador-tabela-comparacao th:not(:first-child) {
+  display: flex; /* NOVO: Usa flexbox para alinhar título e botão */
+  justify-content: space-between; /* NOVO: Alinha o título à esquerda e o botão à direita */
+  align-items: flex-start; /* NOVO: Alinha os itens ao topo */
+  flex-wrap: wrap; /* NOVO: Permite quebra de linha se necessário */
+}
+
+.comparador-tabela-comparacao th button {
+  background-color: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 18px;
+  margin-left: 10px;
+  transition: transform 0.2s;
+  flex-shrink: 0; /* NOVO: Impede que o botão encolha */
+}
+
+.comparador-tabela-comparacao th button:hover {
+  transform: scale(1.2);
+}
+
+/* Estilo dos botões de ação */
+.comparador-botoes-acao button {
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.comparador-botoes-acao button:hover {
+  transform: translateY(-2px);
+}
+
+.comparador-botoes-acao button:first-child {
+  background-color: #dc3545;
+  color: white;
+}
+
+.comparador-botoes-acao button:first-child:hover {
+  background-color: #c82333;
+}
+
+.comparador-botoes-acao button:last-child {
+  background-color: #28a745;
+  color: white;
+}
+
+.comparador-botoes-acao button:last-child:hover {
+  background-color: #218838;
+}
+
+/* Estilo para a lista de produtos */
+.comparador-produtos-disponiveis {
+  margin-top: 40px;
+}
+
+.comparador-produtos-disponiveis h3 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.comparador-grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.comparador-card-produto {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: center;
+}
+
+.comparador-card-produto h4 {
+  margin: 0 0 10px;
+  color: #007bff;
+  font-size: 1.2em;
+}
+
+.comparador-card-produto p {
+  margin: 0 0 5px;
+  color: #666;
+}
+
+.comparador-card-produto button {
+  background-color: #007bff;
+  color: white;
+  margin-top: 15px;
+}
+
+.comparador-card-produto button:hover {
+  background-color: #0056b3;
+}
+
+/* Botão Voltar ao Topo */
+.scroll-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.scroll-to-top:hover {
+  background-color: #0056b3;
+  transform: scale(1.1);
+}

@@ -1,0 +1,58 @@
+/* Estilos para o AdminDashboard */
+.admin-container {
+  max-width: 800px;
+  margin: 100px auto 20px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.admin-login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-width: 300px;
+  margin: 20px auto;
+}
+
+.admin-login-form input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.admin-login-form button {
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.admin-error {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+.admin-logs-table {
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+.admin-logs-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-logs-table th, .admin-logs-table td {
+  padding: 12px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.admin-logs-table th {
+  background-color: #f2f2f2;
+}

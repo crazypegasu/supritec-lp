@@ -1,20 +1,27 @@
 // Comparador.jsx
 import React, { useState, useEffect } from "react";
 import ChatAssistente from "./ChatAssistente";
+import './comparador.css'
 
 export default function Comparador() {
   const [produtosIntelbras, setProdutosIntelbras] = useState([]);
   const [produtosPPA, setProdutosPPA] = useState([]);
   const [encerrados, setEncerrados] = useState([]);
   const [produtosSelecionados, setProdutosSelecionados] = useState([]);
-  
-  // **NOVOS ESTADOS PARA O CHAT**
+
+  // Estados para o Chat
   const [chatAberto, setChatAberto] = useState(false);
   const [mensagemInicialChat, setMensagemInicialChat] = useState("");
 
+  // Estado para o botão Voltar ao Topo
+  const [showScrollButton, setShowScrollButton] = useState(false);
+
+  // NOVO: Estado para a barra de pesquisa
+  const [busca, setBusca] = useState("");
+
   // Carregar produtos Intelbras
   useEffect(() => {
-    fetch("produtos_intelbras.json")
+    fetch("produtos_intelbras_september.json")
       .then((res) => res.json())
       .then((data) => setProdutosIntelbras(data));
   }, []);
@@ -74,6 +81,20 @@ export default function Comparador() {
     })),
   ];
 
+  // NOVO: Filtrar produtos com base na busca
+  const produtosFiltrados = todosProdutos.filter((p) => {
+    const termoDeBusca = busca.toLowerCase();
+    const descricao = p.descricao ? p.descricao.toLowerCase() : "";
+    const codigo = p.codigo ? String(p.codigo).toLowerCase() : "";
+    const tipo = p.tipo ? p.tipo.toLowerCase() : "";
+
+    return (
+      descricao.includes(termoDeBusca) ||
+      codigo.includes(termoDeBusca) ||
+      tipo.includes(termoDeBusca)
+    );
+  });
+
   // Adicionar produto
   const adicionarProduto = (produto) => {
     if (produtosSelecionados.length >= 3) {
@@ -98,41 +119,67 @@ export default function Comparador() {
     setChatAberto(false);
     setMensagemInicialChat("");
   };
-  
-  // **NOVA FUNÇÃO: Prepara o prompt e abre o chat**
-    const iniciarComparacaoIA = () => {
-    // Cria o texto mais objetivo para enviar ao chat
+
+  // Função: Prepara o prompt e abre o chat
+  const iniciarComparacaoIA = () => {
     const prompt = `
       Faça uma breve comparação técnica dos seguintes produtos, destacando as características e diferenciais mais importantes.
 
       Produtos para comparação:
-      ${produtosSelecionados.map((p) => {
-        return `
+      ${produtosSelecionados
+        .map((p) => {
+          return `
         - Produto: ${p.descricao}
         - Código: ${p.codigo}
-        - Unidade: ${p.unidade}
-        - Segmento: ${p.segmento}
-        - Família: ${p.familia}
-        - Status: ${p.status}
-        - Substituto: ${p.substituto || 'N/A'}
-        - Indicação: ${p.indicacao || 'N/A'}
-        - Marca: ${p.tipo}
         `;
-      }).join('\n')}
+        })
+        .join("\n")}
     `;
-    
-    setMensagemInicialChat(prompt); // Define a nova mensagem inicial
-    setChatAberto(true); // Abre o chat
+
+    setMensagemInicialChat(prompt);
+    setChatAberto(true);
+  };
+
+  // Lógica para o botão Voltar ao Topo
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.pageYOffset > 300) {
+        setShowScrollButton(true);
+      } else {
+        setShowScrollButton(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
   return (
     <div className="comparador-container">
       <h2>🔎 Comparador de Produtos</h2>
 
-      {/* Tabela de comparação - AGORA NO INÍCIO */}
+      {/* NOVO: Barra de pesquisa */}
+      <input
+        type="text"
+        placeholder="Buscar produto por nome, código ou marca..."
+        value={busca}
+        onChange={(e) => setBusca(e.target.value)}
+        className="comparador-search-input"
+      />
+
       {produtosSelecionados.length > 0 && (
         <>
-          <div className="tabela-comparacao">
+          <div className="comparador-tabela-comparacao">
             <table border="1">
               <thead>
                 <tr>
@@ -140,7 +187,9 @@ export default function Comparador() {
                   {produtosSelecionados.map((p) => (
                     <th key={p.codigo}>
                       {p.descricao}
-                      <button onClick={() => removerProduto(p.codigo)}>❌</button>
+                      <button onClick={() => removerProduto(p.codigo)}>
+                        ❌
+                      </button>
                     </th>
                   ))}
                 </tr>
@@ -161,40 +210,49 @@ export default function Comparador() {
               </tbody>
             </table>
           </div>
-          <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
+          <div className="comparador-botoes-acao" style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
             <button onClick={limparComparacao}>🧹 Limpar comparação</button>
-            <button onClick={iniciarComparacaoIA}>✨ Gerar Comparação Técnica</button>
+            <button onClick={iniciarComparacaoIA}>
+              ✨ Gerar Comparação Técnica
+            </button>
           </div>
         </>
       )}
 
-      {/* Renderiza o componente de chat se o estado 'chatAberto' for true */}
       {chatAberto && (
-        <ChatAssistente 
-          onClose={() => setChatAberto(false)} 
+        <ChatAssistente
+          onClose={() => setChatAberto(false)}
           initialMessage={mensagemInicialChat}
         />
       )}
 
-      {/* Mensagem quando não há produtos selecionados */}
       {produtosSelecionados.length === 0 && (
         <p>Nenhum produto selecionado para comparação.</p>
       )}
 
-      {/* Lista de produtos disponíveis */}
-      <div className="produtos-disponiveis">
+      <div className="comparador-produtos-disponiveis">
         <h3>Selecione até 3 produtos:</h3>
-        <div className="grid-container">
-          {todosProdutos.map((p) => (
-            <div key={p.codigo} className="card-produto">
-              <h4>{p.descricao}</h4>
-              <p>Código: {p.codigo}</p>
-              <p>{p.tipo}</p>
-              <button onClick={() => adicionarProduto(p)}>➕ Comparar</button>
-            </div>
-          ))}
+        <div className="comparador-grid-container">
+          {produtosFiltrados.length > 0 ? (
+            produtosFiltrados.map((p) => (
+              <div key={p.codigo} className="comparador-card-produto">
+                <h4>{p.descricao}</h4>
+                <p>Código: {p.codigo}</p>
+                <p>{p.tipo}</p>
+                <button onClick={() => adicionarProduto(p)}>➕ Comparar</button>
+              </div>
+            ))
+          ) : (
+            <p className="no-products">Nenhum produto encontrado.</p>
+          )}
         </div>
       </div>
+      
+      {showScrollButton && (
+        <button className="scroll-to-top" onClick={scrollToTop}>
+          ⬆️
+        </button>
+      )}
     </div>
   );
 }
