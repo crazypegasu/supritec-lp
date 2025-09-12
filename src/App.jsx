@@ -1,9 +1,8 @@
-// App.jsx
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import ChatAssistente from "./ChatAssistente";
 import Comparador from "./Comparador";
-import AdminDashboard from "./adminDashboard"; // Importe o novo componente
+import AdminDashboard from "./adminDashboard"; 
 
 // Componente CardProduto
 const CardProduto = ({ produto, tipo, refsMap }) => {
@@ -212,7 +211,6 @@ function Catalogo() {
   );
 }
 
-// App com rotas
 // App com rotas
 export default function App() {
   return (

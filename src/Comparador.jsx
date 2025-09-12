@@ -1,4 +1,3 @@
-// Comparador.jsx
 import React, { useState, useEffect } from "react";
 import ChatAssistente from "./ChatAssistente";
 import './comparador.css'
@@ -81,7 +80,7 @@ export default function Comparador() {
     })),
   ];
 
-  // NOVO: Filtrar produtos com base na busca
+  // Filtrar produtos com base na busca
   const produtosFiltrados = todosProdutos.filter((p) => {
     const termoDeBusca = busca.toLowerCase();
     const descricao = p.descricao ? p.descricao.toLowerCase() : "";
@@ -140,7 +139,7 @@ export default function Comparador() {
     setChatAberto(true);
   };
 
-  // Lógica para o botão Voltar ao Topo
+  // Lógica do botão Voltar ao Topo
   useEffect(() => {
     const handleScroll = () => {
       if (window.pageYOffset > 300) {
@@ -168,7 +167,7 @@ export default function Comparador() {
     <div className="comparador-container">
       <h2>🔎 Comparador de Produtos</h2>
 
-      {/* NOVO: Barra de pesquisa */}
+      {/*Barra de pesquisa */}
       <input
         type="text"
         placeholder="Buscar produto por nome, código ou marca..."

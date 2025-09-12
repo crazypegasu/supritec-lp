@@ -4,7 +4,7 @@ export default function ChatAssistente({ onClose, initialMessage }) {
   const [mensagem, setMensagem] = useState("");
   const [respostas, setRespostas] = useState([]);
 
-  // URL do backend (pega do .env)
+  // URL do backend pega do .env
   const API_URL = import.meta.env.VITE_API_URL;
 
   // Lógica para enviar a mensagem
@@ -36,12 +36,11 @@ export default function ChatAssistente({ onClose, initialMessage }) {
     }
   };
 
-  // Efeito para buscar o histórico e enviar a mensagem inicial
+  // Efeito para buscar o histórico de chat e enviar uma mensagem inicial
   useEffect(() => {
     // Função para buscar o histórico
     const carregarHistorico = async () => {
       try {
-        // Assume que você tem uma API para buscar o histórico de chat
         const res = await fetch(`${API_URL}/api/chat/history`);
         const data = await res.json();
         setRespostas(data.history || []);
@@ -52,8 +51,7 @@ export default function ChatAssistente({ onClose, initialMessage }) {
     
     carregarHistorico();
 
-    // Se houver uma mensagem inicial, a envia após o histórico carregar
-    // A lógica de "carregar e depois enviar" é crucial para a ordem das mensagens
+
     if (initialMessage) {
       enviarMensagem(initialMessage);
     }
