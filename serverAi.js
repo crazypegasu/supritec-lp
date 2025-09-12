@@ -156,9 +156,13 @@ app.get("/api/chat/history", (req, res) => {
   res.json({ history: historicoFormatado });
 });
 
-// 🔹 Upload do Excel e conversão automática
+// 🔹 Upload do Excel e conversão automática com backup
 app.post("/api/upload-psd", upload.single("file"), (req, res) => {
   try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: "Nenhum arquivo enviado." });
+    }
+
     const filePath = req.file.path;
     const workbook = xlsx.readFile(filePath);
     const sheetName = workbook.SheetNames[0];
@@ -171,7 +175,6 @@ app.post("/api/upload-psd", upload.single("file"), (req, res) => {
       segmento: row["Segmento"] || "",
       codigo: row["Código"] || 0,
       descricao: row["Descrição"] || "",
-      //ufOrigem: row["UF Origem"] || "",
       psd: parseFloat(row["PSD"]) || 0,
       pscf: parseFloat(row["PSCF"]) || 0,
       id: index + 1,
@@ -181,13 +184,66 @@ app.post("/api/upload-psd", upload.single("file"), (req, res) => {
     // Salva no JSON substituindo o antigo
     fs.writeFileSync("produtos_intelbras.json", JSON.stringify(produtos, null, 2), "utf8");
 
-    res.json({ success: true, message: "Arquivo PSD convertido e salvo com sucesso!", total: produtos.length });
+    // Backup organizado com timestamp
+    const backupDir = path.resolve("uploads/backup");
+    if (!fs.existsSync(backupDir)) {
+      fs.mkdirSync(backupDir, { recursive: true });
+    }
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const backupFileName = `backup_${timestamp}_${req.file.originalname}`;
+    const backupPath = path.join(backupDir, backupFileName);
+
+    fs.renameSync(filePath, backupPath);
+
+    res.json({
+      success: true,
+      message: "Arquivo PSD convertido e salvo com sucesso!",
+      total: produtos.length,
+      backup: backupFileName
+    });
   } catch (err) {
     console.error("Erro ao processar upload PSD:", err);
     res.status(500).json({ success: false, message: "Erro ao processar o arquivo." });
   }
 });
 
+// 📂 Listar backups disponíveis
+app.get("/api/backups", (req, res) => {
+  try {
+    const backupDir = path.resolve("uploads/backup");
+    if (!fs.existsSync(backupDir)) {
+      return res.json([]);
+    }
+
+    const files = fs.readdirSync(backupDir).map(file => ({
+      nome: file,
+      data: fs.statSync(path.join(backupDir, file)).mtime
+    }));
+
+    res.json(files.sort((a, b) => b.data - a.data)); // mais recentes primeiro
+  } catch (err) {
+    console.error("Erro ao listar backups:", err);
+    res.status(500).json({ success: false, message: "Erro ao listar backups." });
+  }
+});
+
+// 📥 Download de backup
+app.get("/api/backups/:filename", (req, res) => {
+  try {
+    const { filename } = req.params;
+    const filePath = path.resolve("uploads/backup", filename);
+
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ success: false, message: "Arquivo não encontrado." });
+    }
+
+    res.download(filePath); // força download
+  } catch (err) {
+    console.error("Erro ao baixar backup:", err);
+    res.status(500).json({ success: false, message: "Erro ao baixar backup." });
+  }
+});
 
 // 🔹 Rota principal do chat
 app.post("/api/chat", async (req, res) => {

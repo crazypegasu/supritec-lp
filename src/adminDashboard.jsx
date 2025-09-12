@@ -6,6 +6,7 @@ export default function AdminDashboard() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [logs, setLogs] = useState([]);
+  const [backups, setBackups] = useState([]);
   const [error, setError] = useState('');
   const [uploadStatus, setUploadStatus] = useState('');
 
@@ -24,7 +25,7 @@ export default function AdminDashboard() {
     else setError('Usuário ou senha incorretos.');
   };
 
-  // Carregar logs
+  // Carregar logs e backups
   useEffect(() => {
     const fetchLogs = async () => {
       try {
@@ -36,7 +37,22 @@ export default function AdminDashboard() {
         setError(err.message);
       }
     };
-    if (isLoggedIn) fetchLogs();
+
+    const fetchBackups = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/backups');
+        if (!response.ok) throw new Error('Falha ao carregar backups.');
+        const data = await response.json();
+        setBackups(data);
+      } catch (err) {
+        setError(err.message);
+      }
+    };
+
+    if (isLoggedIn) {
+      fetchLogs();
+      fetchBackups();
+    }
   }, [isLoggedIn]);
 
   // Upload do Excel
@@ -87,6 +103,37 @@ export default function AdminDashboard() {
         <h3>Upload PSD Intelbras</h3>
         <input type="file" accept=".xlsx,.xls" onChange={handleFileUpload} />
         {uploadStatus && <p>{uploadStatus}</p>}
+      </div>
+
+      {/* Backups */}
+      <div className="admin-backups-table">
+        <h3>Backups de Arquivos</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Nome do Arquivo</th>
+              <th>Data</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {backups.map((backup, index) => (
+              <tr key={index}>
+                <td>{backup.nome}</td>
+                <td>{new Date(backup.data).toLocaleString()}</td>
+                <td>
+                  <a
+                    href={`http://localhost:5000/api/backups/${backup.nome}`}
+                    download
+                    className="btn-download"
+                  >
+                    📥 Download
+                  </a>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       {/* Logs */}
