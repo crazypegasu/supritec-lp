@@ -138,3 +138,95 @@
 .btn-download:hover {
   background-color: #16a34a;
 }
+
+* Adicionado a classe .admin-users-table para padronização */
+.admin-logs-table,
+.admin-backups-table,
+.admin-users-table {
+  overflow-x: auto;
+  margin-top: 30px;
+}
+
+.admin-logs-table table,
+.admin-backups-table table,
+.admin-users-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.admin-logs-table th, 
+.admin-logs-table td,
+.admin-backups-table th,
+.admin-backups-table td,
+.admin-users-table th,
+.admin-users-table td {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.admin-logs-table th, 
+.admin-backups-table th,
+.admin-users-table th {
+  background-color: #007bff;
+  color: white;
+  font-weight: 600;
+}
+
+.admin-logs-table tr:nth-child(even),
+.admin-backups-table tr:nth-child(even),
+.admin-users-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.admin-logs-table tr:hover,
+.admin-backups-table tr:hover,
+.admin-users-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.btn-download {
+  padding: 6px 12px;
+  background-color: #15803d;
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.btn-download:hover {
+  background-color: #16a34a;
+}
+
+/* Estilos para a seção de gerenciamento de usuários */
+.admin-users-section {
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #f0f3f6;
+  border: 1px solid #e0e6ed;
+}
+
+.admin-users-section h3 {
+  color: #333;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 5px;
+  margin-bottom: 20px;
+  display: inline-block;
+}
+
+.admin-create-user {
+  margin-bottom: 20px;
+}
+
+.admin-create-user h4,
+.admin-users-table h4 {
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.admin-create-user .admin-login-form {
+  max-width: none;
+}

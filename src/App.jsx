@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import ChatAssistente from "./ChatAssistente";
-import Comparador from "./Comparador";
-import AdminDashboard from "./adminDashboard"; 
+import ChatAssistente from "./ChatAssistente.jsx";
+import Comparador from "./Comparador.jsx";
+import AdminDashboard from "./adminDashboard.jsx";
 
 // Componente CardProduto
 const CardProduto = ({ produto, tipo, refsMap }) => {
@@ -90,47 +90,83 @@ function Catalogo() {
   const [chatAberto, setChatAberto] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
 
+  // filtro ativo mantém tipo + valor
+  const [filtroAtivo, setFiltroAtivo] = useState({ tipo: null, valor: null });
+  // dropdown aberto controla o dropdown visual
+  const [dropdownAberto, setDropdownAberto] = useState(null);
+
   const refsMap = {};
 
-  // Carregar produtos Intelbras
+  const filterOptions = {
+    segmento: [
+      "Alarmes", "Cabos Metálicos", "Cabos Opticos", "Cameras Plug and Play", "Captacao de Imagem",
+      "CFTV IP", "Comunicacao Corporativa", "Comunicacao em Nuvem", "Comunicacao HO",
+      "Controle de Acesso Condominial", "Controle de Acesso Corporativo", "Controle de Acesso Residencial",
+      "Drones", "Energia HO", "Fechaduras Digitais", "Fontes", "Gerenciamento de Imagem",
+      "Incendio e Iluminacao", "Monitoramento e rastreamento", "Nobreaks", "Passivos Opticos",
+      "Racks", "Radiocomunicadores", "Redes Empresariais", "Redes Opticas", "Sensores",
+      "Sistemas Automatizados", "Solar Off Grid"
+    ],
+    unidade: [
+      "COMUNICACAO", "CONSUMO", "CONTROLE DE ACESSOS", "ENERGIA", "ENERGIA SOLAR", "REDES", "SEGURANCA ELETRONICA"
+    ]
+  };
+
   useEffect(() => {
     fetch("produtos_intelbras_september.json")
       .then((res) => res.json())
       .then((data) => setProdutosIntelbras(data));
   }, []);
 
-  // Carregar produtos PPA
   useEffect(() => {
     fetch("produtos_ppa.json")
       .then((res) => res.json())
       .then((data) => setProdutosPPA(data));
   }, []);
 
-  // Carregar produtos encerrados
   useEffect(() => {
     fetch("http://localhost:5000/api/encerrados")
       .then((res) => res.json())
       .then((data) => setEncerrados(data));
   }, []);
 
-  // Função de filtro
-  const filtrarProdutos = (produtos, tipo) =>
-    produtos.filter((p) => {
-      if (tipo === "intelbras") {
-        return (
-          p.descricao?.toLowerCase().includes(busca.toLowerCase()) ||
-          String(p.codigo).includes(busca) ||
-          p.segmento?.toLowerCase().includes(busca.toLowerCase())
-        );
-      } else {
-        return (
-          p.Descrição?.toLowerCase().includes(busca.toLowerCase()) ||
-          String(p.Código).includes(busca)
-        );
-      }
-    });
+  const handleClearFilter = () => {
+    setFiltroAtivo({ tipo: null, valor: null });
+  };
 
-  // Aplicar status encerrado aos produtos Intelbras
+  // Função de filtro
+  const filtrarProdutos = (produtos, tipo) => {
+    const termoBusca = busca.toLowerCase();
+
+    return produtos.filter((p) => {
+      let correspondeBusca = false;
+      let correspondeFiltro = true;
+
+      if (tipo === "intelbras") {
+        correspondeBusca =
+          p.descricao?.toLowerCase().includes(termoBusca) ||
+          String(p.codigo).includes(termoBusca) ||
+          p.segmento?.toLowerCase().includes(termoBusca);
+
+        if (filtroAtivo.valor) {
+          let valorProduto = "";
+          if (filtroAtivo.tipo === "segmento") valorProduto = p.segmento || "";
+          if (filtroAtivo.tipo === "unidade") valorProduto = p.unidade || p.Unidade || "";
+          correspondeFiltro = valorProduto.toLowerCase() === filtroAtivo.valor.toLowerCase();
+        }
+      } else {
+        correspondeBusca =
+          p.Descrição?.toLowerCase().includes(termoBusca) ||
+          String(p.Código).includes(termoBusca);
+      }
+
+      const passouNaBusca = termoBusca === "" || correspondeBusca;
+      const passouNoFiltro = !filtroAtivo.valor || correspondeFiltro;
+
+      return passouNaBusca && passouNoFiltro;
+    });
+  };
+
   const produtosIntelbrasComEncerrados = produtosIntelbras.map((p) => {
     const enc = encerrados.find((e) => String(e["Código Produto"]) === String(p.codigo));
     if (enc) {
@@ -147,7 +183,6 @@ function Catalogo() {
   const produtosIntelbrasFiltrados = filtrarProdutos(produtosIntelbrasComEncerrados, "intelbras");
   const produtosPPAFiltrados = filtrarProdutos(produtosPPA, "ppa");
 
-  // Criar refs
   produtosIntelbrasComEncerrados.forEach((p) => {
     refsMap[p.codigo] = refsMap[p.codigo] || React.createRef();
   });
@@ -159,18 +194,58 @@ function Catalogo() {
     <div className={`app-container ${darkMode ? "dark" : ""}`}>
       <header className="app-header">
         <h1>Catálogo de Produtos</h1>
-        <input
-          type="text"
-          placeholder="Buscar produto..."
-          value={busca}
-          onChange={(e) => setBusca(e.target.value)}
-        />
+        <div className="search-and-filter-container">
+          <input
+            type="text"
+            placeholder="Buscar produto..."
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+          />
+          <div className="filter-dropdown-container">
+            <button
+              onClick={() => setDropdownAberto(dropdownAberto === 'segmento' ? null : 'segmento')}
+              className="filter-button"
+            >
+              Segmento {dropdownAberto === 'segmento' ? '▲' : '▼'}
+            </button>
+            <button
+              onClick={() => setDropdownAberto(dropdownAberto === 'unidade' ? null : 'unidade')}
+              className="filter-button"
+            >
+              Unidade {dropdownAberto === 'unidade' ? '▲' : '▼'}
+            </button>
+            {dropdownAberto && (
+              <div className="filter-options-dropdown">
+                {filterOptions[dropdownAberto].map(option => (
+                  <div
+                    key={option}
+                    onClick={() => {
+                      setFiltroAtivo({ tipo: dropdownAberto, valor: option });
+                      setDropdownAberto(null); // fecha dropdown
+                    }}
+                    className="filter-option"
+                  >
+                    {option}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
         <button className="btn-darkmode" onClick={() => setDarkMode(!darkMode)}>
           {darkMode ? "Modo Claro" : "Modo Escuro"}
         </button>
       </header>
 
       <main className="app-main">
+        {filtroAtivo.valor && (
+          <div className="filter-status">
+            Filtrando por: <span className="filter-status-value">{filtroAtivo.valor}</span>
+            <button onClick={handleClearFilter} className="clear-filter-button">✖ Limpar</button>
+          </div>
+        )}
+
         <h2>Intelbras</h2>
         <div className="grid-container">
           {produtosIntelbrasFiltrados.length > 0 ? (
@@ -218,12 +293,12 @@ export default function App() {
       <nav className="app-nav">
         <Link to="/">🏠 Catálogo</Link> | 
         <Link to="/comparador">🔎 Comparador</Link> |
-        <Link to="/admin">🔑 Admin</Link> {/* NOVO LINK */}
+        <Link to="/admin">🔑 Admin</Link>
       </nav>
       <Routes>
         <Route path="/" element={<Catalogo />} />
         <Route path="/comparador" element={<Comparador />} />
-        <Route path="/admin" element={<AdminDashboard />} /> {/* NOVA ROTA */}
+        <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
     </Router>
   );

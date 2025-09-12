@@ -27,3 +27,7 @@ dist-ssr
 .env
 
 README.md
+
+# Banco de dados local (SQLite)
+database/users.db
+database/users.db-journal

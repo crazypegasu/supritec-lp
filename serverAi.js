@@ -8,12 +8,15 @@ import xlsx from "xlsx";
 import { parse } from "csv-parse/sync";
 import path from "path";
 import { fileURLToPath } from "url";
+import bcrypt from "bcrypt";
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+const db = require('./database/database.cjs');
 
 dotenv.config();
 
-// Configuração do upload de arquivo css
+// Configuração do upload de arquivo
 const upload = multer({ dest: "uploads/" });
-
 
 const app = express();
 app.use(cors());
@@ -37,9 +40,9 @@ function carregarHistoricoDoArquivo() {
         .split("\n")
         .filter((line) => line)
         .map((line) => JSON.parse(line));
-      
+
       // Filtra logs que contêm 'pergunta' e 'resposta' para o chat
-      historico = logs.filter(log => log.pergunta && log.resposta);
+      historico = logs.filter((log) => log.pergunta && log.resposta);
 
       console.log("✅ Histórico de chat carregado do arquivo.");
     } catch (err) {
@@ -108,15 +111,101 @@ async function buscarNoWolfram(query) {
   }
 }
 
+
+
+// ## Rotas de Autenticação e Gerenciamento
+
 // 🆕 Rota de autenticação para o painel de admin
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
-  if (username === "admin" && password === "12345") {
-    res.json({ success: true, message: "Login successful!" });
-  } else {
-    res.status(401).json({ success: false, message: "Invalid credentials." });
-  }
+
+  // Busca o usuário no banco de dados
+  db.get("SELECT * FROM users WHERE username = ?", [username], (err, user) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ success: false, message: "Server error." });
+    }
+
+    // Se o usuário não for encontrado
+    if (!user) {
+      return res.status(401).json({ success: false, message: "Invalid credentials." });
+    }
+
+    // Compara a senha fornecida com a senha criptografada do banco de dados
+    bcrypt.compare(password, user.password, (err, result) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ success: false, message: "Server error." });
+      }
+
+      if (result) {
+        // Login bem-sucedido
+        const isAdmin = user.username === 'admin';
+        res.json({ success: true, message: "Login successful!", isAdmin });
+      } else {
+        // Senha incorreta
+        res.status(401).json({ success: false, message: "Invalid credentials." });
+      }
+    });
+  });
 });
+
+// 🆕 Rota para registrar novos usuários
+app.post("/api/register", (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({ success: false, message: "Username e password são obrigatórios." });
+  }
+
+  // Criptografa a senha antes de salvar no banco de dados
+  bcrypt.hash(password, 10, (err, hash) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ success: false, message: "Erro ao criptografar a senha." });
+    }
+
+    // Insere o novo usuário no banco de dados
+    db.run(
+      "INSERT INTO users (username, password) VALUES (?, ?)",
+      [username, hash],
+      function (err) {
+        if (err) {
+          // sqlite3 erro 19 é "UNIQUE constraint failed"
+          if (err.errno === 19) {
+            return res.status(409).json({ success: false, message: "Usuário já existe." });
+          }
+          console.error(err);
+          return res.status(500).json({ success: false, message: "Erro ao criar usuário." });
+        }
+        res.status(201).json({ success: true, message: "Usuário criado com sucesso!" });
+      }
+    );
+  });
+});
+
+// 🆕 Rota para obter a lista de usuários (restrito a admin)
+app.get("/api/users", (req, res) => {
+  const { username } = req.query;
+
+  // Verificação de acesso: somente o usuário 'admin' pode ver esta lista
+  if (username !== 'admin') {
+    return res.status(403).json({ success: false, message: "Acesso negado." });
+  }
+
+  // Busca todos os usuários, mas omite a senha por segurança
+  db.all("SELECT id, username FROM users", (err, rows) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ success: false, message: "Erro ao buscar usuários." });
+    }
+    res.json({ success: true, users: rows });
+  });
+});
+
+
+
+// ## Rotas de Painel Administrativo
 
 // 🆕 Rota para obter os logs de chat
 app.get("/api/chat-logs", (req, res) => {
@@ -145,12 +234,12 @@ app.get("/api/chat/history", (req, res) => {
   const hoje = new Date().toISOString().split("T")[0]; // pega apenas a parte YYYY-MM-DD
 
   // Filtra apenas logs do dia atual
-  const historicoHoje = historico.filter(log => log.data.startsWith(hoje));
+  const historicoHoje = historico.filter((log) => log.data.startsWith(hoje));
 
   // Converte para o formato esperado pelo front
-  const historicoFormatado = historicoHoje.flatMap(log => [
+  const historicoFormatado = historicoHoje.flatMap((log) => [
     { autor: "Você", texto: log.pergunta },
-    { autor: "Assistente", texto: log.resposta }
+    { autor: "Assistente", texto: log.resposta },
   ]);
 
   res.json({ history: historicoFormatado });
@@ -200,7 +289,7 @@ app.post("/api/upload-psd", upload.single("file"), (req, res) => {
       success: true,
       message: "Arquivo PSD convertido e salvo com sucesso!",
       total: produtos.length,
-      backup: backupFileName
+      backup: backupFileName,
     });
   } catch (err) {
     console.error("Erro ao processar upload PSD:", err);
@@ -216,9 +305,9 @@ app.get("/api/backups", (req, res) => {
       return res.json([]);
     }
 
-    const files = fs.readdirSync(backupDir).map(file => ({
+    const files = fs.readdirSync(backupDir).map((file) => ({
       nome: file,
-      data: fs.statSync(path.join(backupDir, file)).mtime
+      data: fs.statSync(path.join(backupDir, file)).mtime,
     }));
 
     res.json(files.sort((a, b) => b.data - a.data)); // mais recentes primeiro
@@ -244,6 +333,9 @@ app.get("/api/backups/:filename", (req, res) => {
     res.status(500).json({ success: false, message: "Erro ao baixar backup." });
   }
 });
+
+
+// ## Rota Principal do Chat
 
 // 🔹 Rota principal do chat
 app.post("/api/chat", async (req, res) => {

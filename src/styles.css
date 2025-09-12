@@ -63,10 +63,15 @@ body {
   color: var(--white);
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   position: sticky;
-  top: 45px; /* colado ao nav */
+  top: 45px;
   z-index: 900;
   padding: 1rem;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
 .app-header h1 {
@@ -74,13 +79,90 @@ body {
   font-size: 1.6rem;
 }
 
-.app-header input {
+/* Container que agrupa a busca e os filtros */
+.search-and-filter-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 600px;
   margin-top: 10px;
+}
+
+/* Estilo para o input de busca */
+.search-and-filter-container input[type="text"] {
+  flex-grow: 1;
   padding: 8px;
   width: 280px;
   border: none;
   border-radius: 6px;
   font-size: 0.95rem;
+}
+
+/* Container do dropdown de filtros */
+.filter-dropdown-container {
+  position: relative;
+  display: flex;
+  gap: 5px;
+}
+
+/* Botões de filtro (Segmento e Unidade) */
+.filter-button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  background: var(--gray-600);
+  color: var(--white);
+  cursor: pointer;
+  transition: 0.2s;
+  font-weight: bold;
+}
+
+.filter-button:hover {
+  background: var(--gray-800);
+}
+
+/* Dropdown de opções */
+.filter-options-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 100;
+  background-color: var(--white);
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-top: 5px;
+  max-height: 200px;
+  overflow-y: auto;
+  width: 200px;
+  text-align: left;
+}
+
+/* Opções dentro do dropdown */
+.filter-option {
+  padding: 10px 15px;
+  cursor: pointer;
+  color: var(--black);
+}
+
+.filter-option:hover {
+  background-color: #f0f0f0;
+}
+
+/* Mensagem de status do filtro */
+.filter-status {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 14px;
+  color: var(--gray-600);
+}
+
+.filter-status-value {
+  font-weight: bold;
+  color: var(--green-700);
 }
 
 /* ================= CONTEÚDO PRINCIPAL ================= */
@@ -92,7 +174,7 @@ body {
   width: 100%;
   flex: 1;
   box-sizing: border-box;
-  padding-top: 45px; /* Adicionado para resolver o problema de sobreposição */
+  padding-top: 45px;
 }
 
 .app-main {
@@ -410,4 +492,51 @@ body {
 @keyframes blink {
   from { background: var(--green-100); }
   to { background: var(--white); }
+}
+
+/* Estilos para a seção de gerenciamento de usuários */
+.admin-users-section {
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #f0f3f6;
+  border: 1px solid #e0e6ed;
+}
+
+.admin-users-section h3 {
+  color: #333;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 5px;
+  margin-bottom: 20px;
+  display: inline-block;
+}
+
+.admin-create-user {
+  margin-bottom: 20px;
+}
+
+.admin-create-user h4,
+.admin-users-table h4 {
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.admin-create-user .admin-login-form {
+  max-width: none;
+}
+
+/* Botão para limpar o filtro */
+.clear-filter-button {
+  margin-left: 10px;
+  padding: 4px 8px;
+  border: 1px solid var(--gray-500);
+  border-radius: 4px;
+  background-color: transparent;
+  color: var(--gray-600);
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.clear-filter-button:hover {
+  background-color: #eee;
 }
