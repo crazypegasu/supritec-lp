@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './dashboard.css'
+import './dashboard.css';
 
 export default function AdminDashboard() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -7,81 +7,91 @@ export default function AdminDashboard() {
   const [password, setPassword] = useState('');
   const [logs, setLogs] = useState([]);
   const [error, setError] = useState('');
+  const [uploadStatus, setUploadStatus] = useState('');
 
-  // Lógica para o login
+  // Login
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
-    
-    // Altere a URL para a porta correta do seu servidor Node.js
     const response = await fetch('http://localhost:5000/api/login', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),
     });
 
     const data = await response.json();
-    if (response.ok && data.success) { // Verifica se a resposta foi bem-sucedida
-      setIsLoggedIn(true);
-    } else {
-      setError('Usuário ou senha incorretos.');
-    }
+    if (response.ok && data.success) setIsLoggedIn(true);
+    else setError('Usuário ou senha incorretos.');
   };
 
-  // Lógica para carregar os logs após o login
+  // Carregar logs
   useEffect(() => {
     const fetchLogs = async () => {
       try {
-        // Altere a URL para a porta correta do seu servidor Node.js
         const response = await fetch('http://localhost:5000/api/chat-logs');
-        
-        if (!response.ok) {
-          throw new Error('Falha ao carregar logs.');
-        }
+        if (!response.ok) throw new Error('Falha ao carregar logs.');
         const data = await response.json();
         setLogs(data);
       } catch (err) {
         setError(err.message);
       }
     };
-
-    if (isLoggedIn) {
-      fetchLogs();
-    }
+    if (isLoggedIn) fetchLogs();
   }, [isLoggedIn]);
 
-  // Se não estiver logado, exibe o formulário de login
+  // Upload do Excel
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("http://localhost:5000/api/upload-psd", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setUploadStatus(`✅ ${data.message} (${data.total} produtos)`);
+      } else {
+        setUploadStatus(`❌ Erro: ${data.message}`);
+      }
+    } catch (err) {
+      setUploadStatus("❌ Falha ao enviar arquivo.");
+    }
+  };
+
   if (!isLoggedIn) {
     return (
       <div className="admin-container">
         <h2>Área de Administração</h2>
         <form onSubmit={handleLogin} className="admin-login-form">
           {error && <p className="admin-error">{error}</p>}
-          <input
-            type="text"
-            placeholder="Usuário"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-          <input
-            type="password"
-            placeholder="Senha"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <input type="text" placeholder="Usuário" value={username} onChange={(e) => setUsername(e.target.value)} />
+          <input type="password" placeholder="Senha" value={password} onChange={(e) => setPassword(e.target.value)} />
           <button type="submit">Entrar</button>
         </form>
       </div>
     );
   }
 
-  // Se estiver logado, exibe a tabela de logs
   return (
     <div className="admin-container">
-      <h2>Logs do Assistente de Chat</h2>
+      <h2>Painel Administrativo</h2>
+
+      {/* Upload */}
+      <div className="admin-upload">
+        <h3>Upload PSD Intelbras</h3>
+        <input type="file" accept=".xlsx,.xls" onChange={handleFileUpload} />
+        {uploadStatus && <p>{uploadStatus}</p>}
+      </div>
+
+      {/* Logs */}
       <div className="admin-logs-table">
+        <h3>Logs do Assistente</h3>
         <table>
           <thead>
             <tr>

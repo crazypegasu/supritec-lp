@@ -3,11 +3,17 @@ import dotenv from "dotenv";
 import fetch from "node-fetch";
 import cors from "cors";
 import fs from "fs";
+import multer from "multer";
+import xlsx from "xlsx";
 import { parse } from "csv-parse/sync";
 import path from "path";
 import { fileURLToPath } from "url";
 
 dotenv.config();
+
+// Configuração do upload de arquivo css
+const upload = multer({ dest: "uploads/" });
+
 
 const app = express();
 app.use(cors());
@@ -134,17 +140,54 @@ app.get("/api/chat-logs", (req, res) => {
   }
 });
 
-// 🆕 Rota para buscar o histórico de chat para o front-end
+// 🆕 Rota para buscar o histórico de chat do dia atual
 app.get("/api/chat/history", (req, res) => {
-  // Converte o histórico salvo em memória (pergunta/resposta) para o formato { autor, texto }
-  const historicoFormatado = histor
-  ico.flatMap(log => [
+  const hoje = new Date().toISOString().split("T")[0]; // pega apenas a parte YYYY-MM-DD
+
+  // Filtra apenas logs do dia atual
+  const historicoHoje = historico.filter(log => log.data.startsWith(hoje));
+
+  // Converte para o formato esperado pelo front
+  const historicoFormatado = historicoHoje.flatMap(log => [
     { autor: "Você", texto: log.pergunta },
     { autor: "Assistente", texto: log.resposta }
   ]);
 
   res.json({ history: historicoFormatado });
 });
+
+// 🔹 Upload do Excel e conversão automática
+app.post("/api/upload-psd", upload.single("file"), (req, res) => {
+  try {
+    const filePath = req.file.path;
+    const workbook = xlsx.readFile(filePath);
+    const sheetName = workbook.SheetNames[0];
+    const sheetData = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+    // Mapeia para o formato do produtos_intelbras.json
+    const produtos = sheetData.map((row, index) => ({
+      tabela: row["Tabela"] || "",
+      unidade: row["Unidade"] || "",
+      segmento: row["Segmento"] || "",
+      codigo: row["Código"] || 0,
+      descricao: row["Descrição"] || "",
+      //ufOrigem: row["UF Origem"] || "",
+      psd: parseFloat(row["PSD"]) || 0,
+      pscf: parseFloat(row["PSCF"]) || 0,
+      id: index + 1,
+      status: "em_linha",
+    }));
+
+    // Salva no JSON substituindo o antigo
+    fs.writeFileSync("produtos_intelbras.json", JSON.stringify(produtos, null, 2), "utf8");
+
+    res.json({ success: true, message: "Arquivo PSD convertido e salvo com sucesso!", total: produtos.length });
+  } catch (err) {
+    console.error("Erro ao processar upload PSD:", err);
+    res.status(500).json({ success: false, message: "Erro ao processar o arquivo." });
+  }
+});
+
 
 // 🔹 Rota principal do chat
 app.post("/api/chat", async (req, res) => {
