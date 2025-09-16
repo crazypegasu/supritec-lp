@@ -3,7 +3,9 @@ import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from "react
 import ChatAssistente from "./ChatAssistente.jsx";
 import Comparador from "./Comparador.jsx";
 import AdminDashboard from "./adminDashboard.jsx";
-import './styles.css';
+import AdminLogin from "./AdminLogin.jsx"; // 🔹 importar o login admin
+
+// import './styles.css';
 
 // ============================
 // CardProduto
@@ -243,7 +245,7 @@ function LoginPage({ onLogin }) {
   };
 
   return (
-    <div className="login-page">
+    <div className="admin-login-container">
       <h2>Login</h2>
       <form onSubmit={handleLogin} className="login-form">
         {error && <p className="login-error">{error}</p>}

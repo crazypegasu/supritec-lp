@@ -27,8 +27,8 @@ body {
   min-height: 100vh;
 }
 
-/* ================= NAV FIXO ================= */
-.app-nav {
+/* ================= HEADER PRINCIPAL FIXO (Barra Preta) ================= */
+.app-header-main {
   position: fixed;
   top: 0;
   left: 0;
@@ -38,12 +38,24 @@ body {
   color: #fff;
   display: flex;
   justify-content: center;
-  align-items: center; 
-  gap: 20px;
-  padding: 0; 
+  align-items: center;
   z-index: 1000;
+}
+
+.app-header-content {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.app-nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
   font-weight: bold;
-  font-size: 15px;
 }
 
 .app-nav a {
@@ -57,7 +69,31 @@ body {
   color: #4caf50;
 }
 
-/* ================= HEADER VERDE ================= */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-welcome {
+  font-size: 14px;
+}
+
+.btn-logout {
+  padding: 5px 10px;
+  background-color: var(--red-600);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-logout:hover {
+  background-color: #c82333;
+}
+
+/* ================= HEADER VERDE DO CATÁLOGO ================= */
 .app-header {
   background-color: var(--green-700);
   color: var(--white);
@@ -66,7 +102,6 @@ body {
   top: 45px;
   z-index: 900;
   padding: 1rem;
-  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -539,4 +574,91 @@ body {
 
 .clear-filter-button:hover {
   background-color: #eee;
+}
+
+/* ===== Fundo minimalista e profissional ===== */
+.admin-login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #f0f2f5; /* Fundo cinza claro */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  padding: 20px;
+}
+
+/* ===== Título ===== */
+.admin-login-container h2 {
+  font-size: 2rem;
+  margin-bottom: 25px;
+  color: #333; /* Cor neutra e profissional */
+  font-weight: 600;
+}
+
+/* ===== Formulário com design de card ===== */
+.admin-login-container form {
+  display: flex;
+  flex-direction: column;
+  width: 380px;
+  max-width: 90%;
+  background-color: #ffffff;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); /* Sombra suave */
+  border: 1px solid #e0e0e0;
+}
+
+/* ===== Inputs ===== */
+.admin-login-container input {
+  padding: 12px 15px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  outline: none;
+  font-size: 1rem;
+  color: #555;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.admin-login-container input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* ===== Botão de login ===== */
+.admin-login-container button {
+  margin-top: 20px;
+  padding: 12px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.admin-login-container button:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
+/* ===== Mensagem de erro ===== */
+.error {
+  color: #dc3545; /* Vermelho padrão para erros */
+  font-weight: 500;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+/* ===== Responsividade ===== */
+@media (max-width: 400px) {
+  .admin-login-container form {
+    padding: 30px;
+  }
 }

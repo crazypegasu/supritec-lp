@@ -1,126 +1,85 @@
-/* ===== Fundo animado ===== */
+/* ===== Fundo minimalista e profissional ===== */
 .admin-login-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-  background-size: 600% 600%;
-  animation: gradientBG 15s ease infinite;
-  font-family: 'Orbitron', sans-serif;
-  color: #f0f0f0;
-  padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f0f2f5; /* Fundo cinza claro */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+    padding: 20px;
 }
 
 /* ===== Título ===== */
 .admin-login-container h2 {
-  font-size: 2.5rem;
-  margin-bottom: 30px;
-  color: #0ff;
-  text-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 30px #0ff;
-  letter-spacing: 2px;
+    font-size: 2rem;
+    margin-bottom: 25px;
+    color: #007bff; /* Azul corporativo */
+    font-weight: 600;
 }
 
-/* ===== Animação do fundo ===== */
-@keyframes gradientBG {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* ===== Formulário ===== */
+/* ===== Formulário com design de card ===== */
 .admin-login-container form {
-  display: flex;
-  flex-direction: column;
-  width: 350px;
-  max-width: 90%;
-  background-color: rgba(20, 20, 30, 0.85);
-  padding: 30px;
-  border-radius: 15px;
-  box-shadow: 0 0 20px #0ff, 0 0 40px #0ff33a, 0 0 60px #0ff;
-  border: 2px solid #0ff;
-  animation: glowBorder 2s ease-in-out infinite alternate;
-}
-
-/* ===== Animação do contorno ===== */
-@keyframes glowBorder {
-  0% { box-shadow: 0 0 10px #0ff, 0 0 20px #0ff33a; }
-  100% { box-shadow: 0 0 20px #0ff, 0 0 40px #0ff33a; }
+    display: flex;
+    flex-direction: column;
+    width: 380px;
+    max-width: 90%;
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); /* Sombra suave */
 }
 
 /* ===== Inputs ===== */
 .admin-login-container input {
-  padding: 12px 15px;
-  margin: 10px 0;
-  border-radius: 10px;
-  border: none;
-  outline: none;
-  font-size: 1rem;
-  background-color: rgba(0,0,0,0.4);
-  color: #0ff;
-  text-shadow: 0 0 3px #0ff;
-  box-shadow: inset 0 0 5px #0ff;
-  transition: all 0.3s ease;
+    padding: 12px 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    outline: none;
+    font-size: 1rem;
+    color: #555;
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .admin-login-container input:focus {
-  background-color: rgba(0,0,0,0.6);
-  box-shadow: 0 0 10px #0ff, inset 0 0 10px #0ff33a;
-  color: #fff;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
 }
 
-/* ===== Botão neon ===== */
+/* ===== Botão de login ===== */
 .admin-login-container button {
-  margin-top: 15px;
-  padding: 12px;
-  font-size: 1.2rem;
-  font-weight: bold;
-  background-color: #0ff;
-  color: #000;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  box-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 30px #0ff;
-  animation: neonPulse 1.5s ease-in-out infinite alternate;
-  transition: transform 0.2s ease;
+    margin-top: 20px;
+    padding: 12px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: background-color 0.2s, transform 0.2s;
 }
 
 .admin-login-container button:hover {
-  transform: scale(1.05);
-}
-
-/* ===== Animação neon pulsando ===== */
-@keyframes neonPulse {
-  0% { box-shadow: 0 0 10px #0ff, 0 0 20px #0ff33a, 0 0 30px #0ff; }
-  100% { box-shadow: 0 0 20px #0ff, 0 0 40px #0ff33a, 0 0 60px #0ff; }
+    background-color: #0056b3;
+    transform: translateY(-2px);
 }
 
 /* ===== Mensagem de erro ===== */
 .error {
-  color: #ff0055;
-  font-weight: bold;
-  margin-bottom: 10px;
-  text-align: center;
-  text-shadow: 0 0 5px #ff0055, 0 0 10px #ff55aa;
-  animation: shake 0.3s ease;
-}
-
-/* ===== Efeito shake para erro ===== */
-@keyframes shake {
-  0% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  50% { transform: translateX(5px); }
-  75% { transform: translateX(-5px); }
-  100% { transform: translateX(0); }
+    color: #dc3545; /* Vermelho padrão para erros */
+    font-weight: 500;
+    margin-bottom: 15px;
+    text-align: center;
 }
 
 /* ===== Responsividade ===== */
 @media (max-width: 400px) {
-  .admin-login-container form {
-    width: 100%;
-    padding: 20px;
-  }
+    .admin-login-container form {
+        padding: 30px;
+    }
 }

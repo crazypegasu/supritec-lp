@@ -1,6 +1,6 @@
 // AdminLogin.jsx
 import React, { useState } from "react";
-import './login.css';
+// import './login.css';
 
 export default function AdminLogin({ onLogin }) {
   const [username, setUsername] = useState("");
