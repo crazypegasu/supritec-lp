@@ -31,3 +31,7 @@ README.md
 # Banco de dados local (SQLite)
 database/users.db
 database/users.db-journal
+
+#backendpy
+backend_py/analise_logs.json
+backend_py/resumo_diario.json

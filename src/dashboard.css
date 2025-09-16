@@ -230,3 +230,181 @@
 .admin-create-user .admin-login-form {
   max-width: none;
 }
+
+/* Botão de deletar na tabela de usuários */
+.btn-delete-user {
+  padding: 6px 12px;
+  background-color: #dc3545; /* Cor vermelha para indicar exclusão */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-delete-user:hover {
+  background-color: #c82333; /* Vermelho mais escuro no hover */
+}
+
+.analise-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.analise-metrics {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.metric-card {
+  background-color: #f0f3f6;
+  border: 1px solid #e0e6ed;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  padding: 20px;
+  text-align: center;
+  flex: 1;
+  min-width: 180px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.metric-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+
+.metric-card h4 {
+  font-size: 1.1em;
+  color: #555;
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 5px;
+}
+
+.metric-card p {
+  font-size: 2.2em;
+  font-weight: bold;
+  margin: 0;
+  color: var(--secondary-color);
+}
+
+.analise-actions {
+  grid-column: 1 / -1;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.btn-executar-analise {
+  padding: 12px 20px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s ease;
+}
+.btn-executar-analise:hover {
+  background-color: #0056b3;
+}
+.analise-actions p {
+  margin-top: 10px;
+  font-style: italic;
+  font-size: 0.9em;
+}
+
+/* Estilos para os gráficos e listas */
+.chart-wrapper,
+.text-analysis-container {
+  background-color: var(--card-background);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  grid-column: span 1;
+}
+
+.chart-wrapper h4,
+.text-analysis-container h4 {
+  margin-top: 0;
+}
+
+/* Garante que os gráficos sejam responsivos */
+.chart-wrapper canvas {
+  width: 100% !important;
+  height: 400px !important;
+}
+
+.text-analysis-container ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.text-analysis-container li {
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--border-color);
+}
+
+.text-analysis-container li:last-child {
+  border-bottom: none;
+}
+
+/* Estilos para os botões de navegação */
+.admin-nav-buttons {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+.admin-nav-buttons button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease, opacity 0.3s ease;
+}
+.admin-nav-buttons button:hover {
+  background-color: #0056b3;
+}
+.admin-nav-buttons button:disabled {
+  background-color: #6c757d;
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.admin-header p {
+  margin: 0;
+  font-size: 1em;
+  color: #555;
+}
+
+.btn-logout {
+  padding: 8px 15px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-logout:hover {
+  background-color: #c82333;
+}
