@@ -129,7 +129,6 @@ export default function Comparador() {
         .map((p) => {
           return `
         - Produto: ${p.descricao}
-        - Código: ${p.codigo}
         `;
         })
         .join("\n")}

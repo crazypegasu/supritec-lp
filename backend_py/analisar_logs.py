@@ -91,6 +91,7 @@ def carregar_chat_logs():
 def gerar_ngrams(palavras, n):
     return [tuple(palavras[i:i+n]) for i in range(len(palavras)-n+1)]
 
+# ===== Função de formatação ÚNICA e CORRETA =====
 def formatar_contagem(counter, stem_to_original, tipo="palavra"):
     if tipo == "palavra":
         return [{"palavra": stem_to_original.get(p, p), "contagem": c} for p, c in counter]
@@ -175,29 +176,20 @@ def analisar_chat():
 
         resultado["por_segmento"][segmento]["analise_sentimento"][sentimento] += 1
 
-    def formatar_contagem(contador, stem_to_original, tipo="palavra"):
-        return [{"palavra": stem_to_original.get(p, p), "contagem": c} for p, c in counter]
-    
-    def formatar_bigramas(contador):
-        return [{"bigrama": " ".join([stem_to_original.get(s, s) for s in p]), "contagem": c} for p, c in contador]
-        
-    def formatar_trigramas(contador):
-        return [{"trigrama": " ".join([stem_to_original.get(s, s) for s in p]), "contagem": c} for p, c in contador]
-
     output = {
         "total_mensagens": resultado["total_mensagens"],
         "palavras_chave": resultado["palavras_chave"],
         "analise_sentimento_geral": resultado["analise_sentimento_geral"],
         "analise_sentimento_temporal": dict(resultado["analise_sentimento_temporal"]),
         "top_palavras_geral": formatar_contagem(Counter(resultado["palavras"]["geral"]).most_common(20), stem_to_original, "palavra"),
-        "top_bigramas_geral": formatar_bigramas(Counter(resultado["bigramas"]["geral"]).most_common(20), stem_to_original),
-        "top_trigramas_geral": formatar_trigramas(Counter(resultado["trigramas"]["geral"]).most_common(20), stem_to_original),
+        "top_bigramas_geral": formatar_contagem(Counter(resultado["bigramas"]["geral"]).most_common(20), stem_to_original, "bigrama"),
+        "top_trigramas_geral": formatar_contagem(Counter(resultado["trigramas"]["geral"]).most_common(20), stem_to_original, "trigrama"),
         "top_palavras_usuario": formatar_contagem(Counter(resultado["palavras"]["usuario"]).most_common(20), stem_to_original, "palavra"),
-        "top_bigramas_usuario": formatar_bigramas(Counter(resultado["bigramas"]["usuario"]).most_common(20), stem_to_original),
-        "top_trigramas_usuario": formatar_trigramas(Counter(resultado["trigramas"]["usuario"]).most_common(20), stem_to_original),
+        "top_bigramas_usuario": formatar_contagem(Counter(resultado["bigramas"]["usuario"]).most_common(20), stem_to_original, "bigrama"),
+        "top_trigramas_usuario": formatar_contagem(Counter(resultado["trigramas"]["usuario"]).most_common(20), stem_to_original, "trigrama"),
         "top_palavras_gpt": formatar_contagem(Counter(resultado["palavras"]["gpt"]).most_common(20), stem_to_original, "palavra"),
-        "top_bigramas_gpt": formatar_bigramas(Counter(resultado["bigramas"]["gpt"]).most_common(20), stem_to_original),
-        "top_trigramas_gpt": formatar_trigramas(Counter(resultado["trigramas"]["gpt"]).most_common(20), stem_to_original),
+        "top_bigramas_gpt": formatar_contagem(Counter(resultado["bigramas"]["gpt"]).most_common(20), stem_to_original, "bigrama"),
+        "top_trigramas_gpt": formatar_contagem(Counter(resultado["trigramas"]["gpt"]).most_common(20), stem_to_original, "trigrama"),
         "por_segmento": {}
     }
 
@@ -205,14 +197,14 @@ def analisar_chat():
         output["por_segmento"][segmento] = {
             "analise_sentimento": data["analise_sentimento"],
             "top_palavras_geral": formatar_contagem(Counter(data["palavras"]["geral"]).most_common(20), stem_to_original, "palavra"),
-            "top_bigramas_geral": formatar_bigramas(Counter(data["bigramas"]["geral"]).most_common(20), stem_to_original),
-            "top_trigramas_geral": formatar_trigramas(Counter(data["trigramas"]["geral"]).most_common(20), stem_to_original),
+            "top_bigramas_geral": formatar_contagem(Counter(data["bigramas"]["geral"]).most_common(20), stem_to_original, "bigrama"),
+            "top_trigramas_geral": formatar_contagem(Counter(data["trigramas"]["geral"]).most_common(20), stem_to_original, "trigrama"),
             "top_palavras_usuario": formatar_contagem(Counter(data["palavras"]["usuario"]).most_common(20), stem_to_original, "palavra"),
-            "top_bigramas_usuario": formatar_bigramas(Counter(data["bigramas"]["usuario"]).most_common(20), stem_to_original),
-            "top_trigramas_usuario": formatar_trigramas(Counter(data["trigramas"]["usuario"]).most_common(20), stem_to_original),
+            "top_bigramas_usuario": formatar_contagem(Counter(data["bigramas"]["usuario"]).most_common(20), stem_to_original, "bigrama"),
+            "top_trigramas_usuario": formatar_contagem(Counter(data["trigramas"]["usuario"]).most_common(20), stem_to_original, "trigrama"),
             "top_palavras_gpt": formatar_contagem(Counter(data["palavras"]["gpt"]).most_common(20), stem_to_original, "palavra"),
-            "top_bigramas_gpt": formatar_bigramas(Counter(data["bigramas"]["gpt"]).most_common(20), stem_to_original),
-            "top_trigramas_gpt": formatar_trigramas(Counter(data["trigramas"]["gpt"]).most_common(20), stem_to_original)
+            "top_bigramas_gpt": formatar_contagem(Counter(data["bigramas"]["gpt"]).most_common(20), stem_to_original, "bigrama"),
+            "top_trigramas_gpt": formatar_contagem(Counter(data["trigramas"]["gpt"]).most_common(20), stem_to_original, "trigrama")
         }
 
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:

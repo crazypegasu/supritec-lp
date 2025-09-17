@@ -350,7 +350,7 @@ app.post("/api/chat", async (req, res) => {
           {
             role: "system",
             content:
-              "Você é um assistente que ajuda vendedores a comparar e entender produtos Intelbras e PPA. Se o produto estiver encerrado, sempre mostre o substituto ou indicação. Responda claro e objetivo (até 6 linhas).",
+              "Você é um assistente especializado em produtos Intelbras e PPA. Sua função é ajudar vendedores a comparar e entender esses produtos. Se o produto estiver encerrado, apresente sempre o substituto ou uma indicação equivalente. Responda de forma clara, direta e objetiva, com até 6 linhas no máximo. Evite repetições e linguagem técnica desnecessária. Quando possível, destaque o benefício prático do produto para o cliente final. (até 7 linhas).",
           },
           {
             role: "system",
@@ -358,7 +358,7 @@ app.post("/api/chat", async (req, res) => {
           },
           { role: "user", content: message },
         ],
-        max_tokens: 200,
+        max_tokens: 300,
       }),
     });
 
