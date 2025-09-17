@@ -7,7 +7,7 @@ export default function ChatAssistente({ onClose, initialMessage, username }) {
   const [respostas, setRespostas] = useState([]);
 
   // URL do backend pega do .env
-  const API_URL = import.meta.env.VITE_API_URL;
+  const API_URL = import.meta.env.VITE_API_URL || 'https://34a462a9-2be2-4663-81c9-60dd79904e16-00-19cnz64ozoro9.riker.replit.dev:3000';
 
   // Lógica para enviar a mensagem
   const enviarMensagem = async (msg) => {
