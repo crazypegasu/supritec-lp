@@ -88,7 +88,8 @@ Status: ${encerrado ? "Encerrado" : "Ativo"}
 // ============================
 // Catalogo
 // ============================
-function Catalogo() {
+// 🔹 Adicione 'username' como uma prop aqui
+function Catalogo({ username }) {
   const [produtosIntelbras, setProdutosIntelbras] = useState([]);
   const [produtosPPA, setProdutosPPA] = useState([]);
   const [encerrados, setEncerrados] = useState([]);
@@ -208,7 +209,8 @@ function Catalogo() {
             <h3>Assistente de Produtos 🤖</h3>
             <button onClick={()=>setChatAberto(false)}>✖</button>
           </div>
-          <ChatAssistente />
+          {/* 🔹 Passe a prop 'username' para o ChatAssistente */}
+          <ChatAssistente username={username} />
         </div>
       )}
     </div>
@@ -314,7 +316,8 @@ function AppContent() {
 
       <main>
         <Routes>
-          <Route path="/" element={<Catalogo />} />
+          {/* 🔹 Passe a prop 'username' para o Catalogo */}
+          <Route path="/" element={<Catalogo username={username} />} />
           <Route path="/comparador" element={<Comparador />} />
           <Route path="/admin" element={isAdmin ? <AdminDashboard username={username} isAdmin={isAdmin} onLogout={handleLogout} /> : <div className="acesso-negado">Você não tem permissão de administrador.</div>} />
         </Routes>

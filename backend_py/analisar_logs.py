@@ -30,7 +30,7 @@ st = RSLPStemmer()
 STOPWORDS = {
     "a", "o", "e", "de", "da", "do", "que", "em", "um", "uma", "para",
     "com", "os", "as", "na", "no", "se", "é", "foi", "ser", "ao", "à",
-    "n", "mais", "marca", "linha", "unidade", "família", "status", 
+    "n", "mais", "marca", "linha", "unidade", "família", "status",
     "indicação", "segmento", "undefined", "qual", "melhor", "boa", "bem",
     "muito", "algum", "haver", "ter", "saber", "como", "ppa", "favor"
 }
@@ -111,6 +111,9 @@ def analisar_chat():
         return
 
     stem_to_original = {}
+    
+    uso_por_usuario = Counter()
+    
     resultado = {
         "total_mensagens": len(logs),
         "palavras_chave": {"intelbras": 0, "codigo": 0},
@@ -131,6 +134,10 @@ def analisar_chat():
         texto = " ".join(filter(None, [entry.get("pergunta"), entry.get("resposta")]))
         sentimento = get_sentimento(texto)
         resultado["analise_sentimento_geral"][sentimento] += 1
+        
+        username = entry.get("username")
+        if username:
+            uso_por_usuario[username] += 1
 
         timestamp = entry.get("data")
         if timestamp:
@@ -149,7 +156,6 @@ def analisar_chat():
         for o, s in zip(palavras_originais, palavras_stemmed):
             if s not in stem_to_original: stem_to_original[s] = o
         
-        # Filtra 'intelbras' e 'codigo' das listas principais
         palavras_filtro_principais = [p for p in palavras_stemmed if p not in [st.stem("intelbras"), st.stem("codigo")]]
 
         if st.stem("intelbras") in palavras_stemmed:
@@ -175,7 +181,9 @@ def analisar_chat():
                 resultado["por_segmento"][segmento][cat]["usuario"].extend(ngram)
 
         resultado["por_segmento"][segmento]["analise_sentimento"][sentimento] += 1
-
+    
+    top_usuario = uso_por_usuario.most_common(1)
+    
     output = {
         "total_mensagens": resultado["total_mensagens"],
         "palavras_chave": resultado["palavras_chave"],
@@ -190,7 +198,9 @@ def analisar_chat():
         "top_palavras_gpt": formatar_contagem(Counter(resultado["palavras"]["gpt"]).most_common(20), stem_to_original, "palavra"),
         "top_bigramas_gpt": formatar_contagem(Counter(resultado["bigramas"]["gpt"]).most_common(20), stem_to_original, "bigrama"),
         "top_trigramas_gpt": formatar_contagem(Counter(resultado["trigramas"]["gpt"]).most_common(20), stem_to_original, "trigrama"),
-        "por_segmento": {}
+        "por_segmento": {},
+        "usuario_mais_ativo": {"username": top_usuario[0][0], "contagem": top_usuario[0][1]} if top_usuario else {"username": "N/A", "contagem": 0},
+        "ranking_usuarios": [{"username": user, "contagem": count} for user, count in uso_por_usuario.most_common()]
     }
 
     for segmento, data in resultado["por_segmento"].items():

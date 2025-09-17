@@ -2,9 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './dashboard.css';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, LineElement, PointElement } from 'chart.js';
 import { Bar, Doughnut, Line } from 'react-chartjs-2';
-
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, LineElement, PointElement);
-
 export default function AdminDashboard({ username, isAdmin }) {
   const [logs, setLogs] = useState([]);
   const [backups, setBackups] = useState([]);
@@ -12,12 +10,9 @@ export default function AdminDashboard({ username, isAdmin }) {
   const [newUser, setNewUser] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
   const [uploadStatus, setUploadStatus] = useState('');
-  
   const [showAnalytics, setShowAnalytics] = useState(false);
-  
   const [analiseData, setAnaliseData] = useState(null);
   const [analiseStatus, setAnaliseStatus] = useState('');
-
   const fetchUsers = async () => {
     try {
       const response = await fetch(`http://localhost:5000/api/users?username=${username}`);
@@ -31,7 +26,6 @@ export default function AdminDashboard({ username, isAdmin }) {
       console.error("Erro na requisição de usuários:", err);
     }
   };
-
   const fetchAnaliseData = async () => {
     try {
       const response = await fetch('http://localhost:5000/api/analise');
@@ -47,7 +41,6 @@ export default function AdminDashboard({ username, isAdmin }) {
       setAnaliseData(null);
     }
   };
-
   const handleExecutarAnalise = async () => {
     setAnaliseStatus("Executando análise, por favor aguarde...");
     try {
@@ -70,7 +63,6 @@ export default function AdminDashboard({ username, isAdmin }) {
         setAnaliseStatus('❌ Falha ao iniciar a análise.');
     }
   };
-
   useEffect(() => {
     const fetchLogsAndBackups = async () => {
       try {
@@ -81,7 +73,6 @@ export default function AdminDashboard({ username, isAdmin }) {
         } else {
           throw new Error('Falha ao carregar logs.');
         }
-
         const backupsResponse = await fetch('http://localhost:5000/api/backups');
         if (backupsResponse.ok) {
           const backupsData = await backupsResponse.json();
@@ -93,13 +84,11 @@ export default function AdminDashboard({ username, isAdmin }) {
         setError(err.message);
       }
     };
-    
     if (isAdmin) {
       fetchLogsAndBackups();
       fetchUsers();
     }
   }, [isAdmin, username]);
-
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -121,7 +110,6 @@ export default function AdminDashboard({ username, isAdmin }) {
       setUploadStatus("❌ Falha ao enviar arquivo.");
     }
   };
-
   const handleCreateUser = async (e) => {
     e.preventDefault();
     try {
@@ -144,7 +132,6 @@ export default function AdminDashboard({ username, isAdmin }) {
       alert("Falha ao criar o usuário.");
     }
   };
-
   const handleDeleteUser = async (userId) => {
     if (window.confirm("Tem certeza que deseja deletar este usuário?")) {
       try {
@@ -165,7 +152,6 @@ export default function AdminDashboard({ username, isAdmin }) {
       }
     }
   };
-  
   const renderAnalyticsDashboard = () => {
     if (!analiseData) {
       return <p>Carregando dados de análise...</p>;
@@ -220,6 +206,13 @@ export default function AdminDashboard({ username, isAdmin }) {
           <div className="metric-card">
               <h4>Total Negativo</h4><p>{analiseData.analise_sentimento_geral.negativo}</p>
           </div>
+          {analiseData.usuario_mais_ativo && (
+            <div className="metric-card">
+              <h4>Usuário Mais Ativo</h4>
+              <p><strong>{analiseData.usuario_mais_ativo.username}</strong></p>
+              <p>({analiseData.usuario_mais_ativo.contagem} perguntas)</p>
+            </div>
+          )}
         </div>
         
         {isAdmin && (
@@ -230,7 +223,6 @@ export default function AdminDashboard({ username, isAdmin }) {
                 {analiseStatus && <p>{analiseStatus}</p>}
             </div>
         )}
-
         <div className="chart-wrapper">
           <h4>Top 10 Palavras</h4>
           <Bar
@@ -260,6 +252,29 @@ export default function AdminDashboard({ username, isAdmin }) {
           <h4>Top 10 Trigramas</h4>
           <ul>{topTrigramasList}</ul>
         </div>
+        {analiseData.ranking_usuarios && analiseData.ranking_usuarios.length > 0 && (
+          <div className="ranking-table-container">
+            <h3>Ranking de Usuários por Perguntas</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Usuário</th>
+                  <th>Perguntas</th>
+                </tr>
+              </thead>
+              <tbody>
+                {analiseData.ranking_usuarios.map((user, index) => (
+                  <tr key={user.username}>
+                    <td>{index + 1}</td>
+                    <td>{user.username}</td>
+                    <td>{user.contagem}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     );
   };
@@ -275,9 +290,7 @@ export default function AdminDashboard({ username, isAdmin }) {
           {uploadStatus && <p>{uploadStatus}</p>}
         </div>
       )}
-
       <hr />
-      
       <div className="admin-nav-buttons">
           <button onClick={() => setShowAnalytics(false)} disabled={!showAnalytics}>
               Visualização Principal
@@ -289,9 +302,7 @@ export default function AdminDashboard({ username, isAdmin }) {
               Dashboard de Análise
           </button>
       </div>
-
       <hr />
-
       {showAnalytics ? (
           renderAnalyticsDashboard()
       ) : (
@@ -325,9 +336,7 @@ export default function AdminDashboard({ username, isAdmin }) {
                 </tbody>
               </table>
             </div>
-
             <hr />
-
             {isAdmin && (
               <>
                 <div className="admin-users-section">
@@ -366,8 +375,8 @@ export default function AdminDashboard({ username, isAdmin }) {
                             <td>{user.id}</td>
                             <td>{user.username}</td>
                             <td>
-                              <button 
-                                onClick={() => handleDeleteUser(user.id)} 
+                              <button
+                                onClick={() => handleDeleteUser(user.id)}
                                 className="btn-delete-user"
                               >
                                 Deletar
@@ -382,13 +391,13 @@ export default function AdminDashboard({ username, isAdmin }) {
                 <hr />
               </>
             )}
-
             <div className="admin-logs-table">
               <h3>Logs do Assistente</h3>
               <table>
                 <thead>
                   <tr>
                     <th>Data</th>
+                    <th>Usuário</th> 
                     <th>Pergunta</th>
                     <th>Resposta</th>
                   </tr>
@@ -397,6 +406,7 @@ export default function AdminDashboard({ username, isAdmin }) {
                   {logs.map((log, index) => (
                     <tr key={index}>
                       <td>{new Date(log.data).toLocaleString()}</td>
+                      <td>{log.username || "N/A"}</td>
                       <td>{log.pergunta}</td>
                       <td>{log.resposta}</td>
                     </tr>

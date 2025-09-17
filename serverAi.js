@@ -1,3 +1,4 @@
+// serverAi.js
 import express from "express";
 import dotenv from "dotenv";
 import fetch from "node-fetch";
@@ -120,7 +121,7 @@ app.post("/api/login", (req, res) => {
       }
       if (result) {
         const isAdmin = user.username === 'admin';
-        res.json({ success: true, message: "Login successful!", isAdmin, username: user.username }); // Linha corrigida
+        res.json({ success: true, message: "Login successful!", isAdmin, username: user.username });
       } else {
         res.status(401).json({ success: false, message: "Invalid credentials." });
       }
@@ -300,7 +301,8 @@ app.get("/api/backups/:filename", (req, res) => {
 
 app.post("/api/chat", async (req, res) => {
   try {
-    const { message } = req.body;
+    // Adicione o username aqui
+    const { message, username } = req.body;
     if (!message || message.trim() === "") {
       return res.status(400).json({ error: "Mensagem vazia." });
     }
@@ -364,7 +366,8 @@ app.post("/api/chat", async (req, res) => {
 
     const data = await response.json();
     const resposta = data.choices?.[0]?.message?.content || "Sem resposta.";
-    const log = { pergunta: message, resposta, origem, data: new Date().toISOString() };
+    // Adicione a propriedade 'username' ao objeto de log
+    const log = { pergunta: message, resposta, origem, username, data: new Date().toISOString() };
     fs.appendFileSync("chat_logs.json", JSON.stringify(log) + "\n");
     historico.push(log);
     res.json({ reply: resposta, origem });

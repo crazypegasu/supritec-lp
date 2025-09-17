@@ -1,6 +1,8 @@
+// ChatAssistente.jsx
 import React, { useState, useEffect } from "react";
 
-export default function ChatAssistente({ onClose, initialMessage }) {
+// Adicione 'username' como uma prop
+export default function ChatAssistente({ onClose, initialMessage, username }) { 
   const [mensagem, setMensagem] = useState("");
   const [respostas, setRespostas] = useState([]);
 
@@ -22,10 +24,11 @@ export default function ChatAssistente({ onClose, initialMessage }) {
     }
 
     try {
+      // Inclua o 'username' no corpo da requisição
       const res = await fetch(`${API_URL}/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: messageToSend }),
+        body: JSON.stringify({ message: messageToSend, username }),
       });
 
       const data = await res.json();
@@ -50,7 +53,6 @@ export default function ChatAssistente({ onClose, initialMessage }) {
     };
     
     carregarHistorico();
-
 
     if (initialMessage) {
       enviarMensagem(initialMessage);
