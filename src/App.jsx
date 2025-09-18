@@ -3,9 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from "react
 import ChatAssistente from "./ChatAssistente.jsx";
 import Comparador from "./Comparador.jsx";
 import AdminDashboard from "./adminDashboard.jsx";
-import AdminLogin from "./AdminLogin.jsx"; // 🔹 importar o login admin
-
-// import './styles.css';
+import AdminLogin from "./AdminLogin.jsx";
 
 // ============================
 // CardProduto
@@ -15,10 +13,20 @@ const CardProduto = ({ produto, tipo, refsMap }) => {
   const descricao = isIntelbras ? produto.descricao : produto.Descrição;
   const codigo = isIntelbras ? produto.codigo : produto.Código;
   const segmento = isIntelbras ? produto.segmento : null;
+  const tabela = isIntelbras ? produto.tabela : null; // 🔹 Adicionado: Extrai a propriedade 'tabela'
   const psd = isIntelbras ? produto.psd : produto["Valor Tabela"];
   const pscf = isIntelbras ? produto.pscf : produto["PSCF"] || null;
   const status = isIntelbras ? produto.status : produto.Status || null;
   const encerrado = status === "encerrado";
+
+  // Função para formatar o texto dos termos específicos
+  const formatarTermo = (text) => {
+    const termosNegrito = ["Distribuição", "Display Profissionais", "Projetos Especiais", "Software", "TMR"];
+    if (termosNegrito.includes(text)) {
+      return <strong>{text}</strong>;
+    }
+    return text;
+  };
 
   const scrollToProduto = (codigo) => {
     const targetRef = refsMap.current[codigo];
@@ -30,14 +38,13 @@ const CardProduto = ({ produto, tipo, refsMap }) => {
   };
 
   const copiarInfo = () => {
-    const texto = `
-Produto: ${descricao}
+    const texto = `Produto: ${descricao}
 Código: ${codigo}
+Tabela: ${tabela || "-"}
 Segmento: ${segmento || "-"}
 PSD: ${psd || "-"}
 PSCF: ${pscf || "-"}
-Status: ${encerrado ? "Encerrado" : "Ativo"}
-`;
+Status: ${encerrado ? "Encerrado" : "Ativo"}`;
     navigator.clipboard.writeText(texto);
     alert("Informações copiadas!");
   };
@@ -49,6 +56,11 @@ Status: ${encerrado ? "Encerrado" : "Ativo"}
     >
       <h3 className="card-titulo">{descricao}</h3>
       <p className="card-codigo">Código: {codigo}</p>
+      
+      {/* 🔹 Adicionado: Renderiza a tabela com a formatação em negrito */}
+      {tabela && <p className="card-tabela">Linha: {formatarTermo(tabela)}</p>}
+      
+      {/* 🔹 O Segmento continua sendo renderizado na linha abaixo, sem alterações */}
       {segmento && <p className="card-segmento">{segmento}</p>}
 
       {encerrado ? (
@@ -103,15 +115,15 @@ function Catalogo({ username }) {
 
   const filterOptions = {
     segmento: [
-      "Alarmes","Cabos Metalicos","Cabos Opticos","Cameras Plug and Play","Captacao de Imagem",
-      "CFTV IP","Comunicacao Corporativa","Comunicacao em Nuvem","Comunicacao HO",
-      "Controle de Acesso Condominial","Controle de Acesso Corporativo","Controle de Acesso Residencial",
-      "Drones","Energia HO","Fechaduras Digitais","Fontes","Gerenciamento de Imagem",
-      "Incendio e Iluminacao","Monitoramento e rastreamento","Nobreaks","Passivos Opticos",
-      "Racks","Radiocomunicadores","Redes Empresariais","Redes Opticas","Sensores",
-      "Sistemas Automatizados","Solar Off Grid"
+      "Alarmes", "Cabos Metalicos", "Cabos Opticos", "Cameras Plug and Play", "Captacao de Imagem",
+      "CFTV IP", "Comunicacao Corporativa", "Comunicacao em Nuvem", "Comunicacao HO",
+      "Controle de Acesso Condominial", "Controle de Acesso Corporativo", "Controle de Acesso Residencial",
+      "Drones", "Energia HO", "Fechaduras Digitais", "Fontes", "Gerenciamento de Imagem",
+      "Incendio e Iluminacao", "Monitoramento e rastreamento", "Nobreaks", "Passivos Opticos",
+      "Racks", "Radiocomunicadores", "Redes Empresariais", "Redes Opticas", "Sensores",
+      "Sistemas Automatizados", "Solar Off Grid"
     ],
-    unidade: ["COMUNICACAO","CONSUMO","CONTROLE DE ACESSOS","ENERGIA","ENERGIA SOLAR","REDES","SEGURANCA ELETRONICA"]
+    unidade: ["COMUNICACAO", "CONSUMO", "CONTROLE DE ACESSOS", "ENERGIA", "ENERGIA SOLAR", "REDES", "SEGURANCA ELETRONICA"]
   };
 
   useEffect(() => {
@@ -143,40 +155,40 @@ function Catalogo({ username }) {
   const produtosIntelbrasComEncerrados = produtosIntelbras.map((p) => {
     const enc = encerrados.find(e => String(e["Código Produto"]) === String(p.codigo));
     if (enc) {
-      return {...p, status:"encerrado", substituto: enc["Substituto Direto"] !== "-" ? enc["Substituto Direto"]: null, indicacao: enc["Indicação"] || null};
+      return { ...p, status: "encerrado", substituto: enc["Substituto Direto"] !== "-" ? enc["Substituto Direto"] : null, indicacao: enc["Indicação"] || null };
     }
     return p;
   });
 
-  const produtosIntelbrasFiltrados = filtrarProdutos(produtosIntelbrasComEncerrados,"intelbras");
-  const produtosPPAFiltrados = filtrarProdutos(produtosPPA,"ppa");
+  const produtosIntelbrasFiltrados = filtrarProdutos(produtosIntelbrasComEncerrados, "intelbras");
+  const produtosPPAFiltrados = filtrarProdutos(produtosPPA, "ppa");
 
-  produtosIntelbrasComEncerrados.forEach(p => { if(!refsMap.current[p.codigo]) refsMap.current[p.codigo] = React.createRef(); });
-  produtosPPA.forEach(p => { if(!refsMap.current[p.Código]) refsMap.current[p.Código] = React.createRef(); });
+  produtosIntelbrasComEncerrados.forEach(p => { if (!refsMap.current[p.codigo]) refsMap.current[p.codigo] = React.createRef(); });
+  produtosPPA.forEach(p => { if (!refsMap.current[p.Código]) refsMap.current[p.Código] = React.createRef(); });
 
   return (
     <div className={`app-container ${darkMode ? "dark" : ""}`}>
       <header className="app-header">
         <h1>Catálogo de Produtos</h1>
         <div className="search-and-filter-container">
-          <input type="text" placeholder="Buscar produto..." value={busca} onChange={(e)=>setBusca(e.target.value)} />
+          <input type="text" placeholder="Buscar produto..." value={busca} onChange={(e) => setBusca(e.target.value)} />
           <div className="filter-dropdown-container">
-            <button onClick={()=>setDropdownAberto(dropdownAberto==='segmento'?null:'segmento')} className="filter-button">
-              Segmento {dropdownAberto==='segmento'?'▲':'▼'}
+            <button onClick={() => setDropdownAberto(dropdownAberto === 'segmento' ? null : 'segmento')} className="filter-button">
+              Segmento {dropdownAberto === 'segmento' ? '▲' : '▼'}
             </button>
-            <button onClick={()=>setDropdownAberto(dropdownAberto==='unidade'?null:'unidade')} className="filter-button">
-              Unidade {dropdownAberto==='unidade'?'▲':'▼'}
+            <button onClick={() => setDropdownAberto(dropdownAberto === 'unidade' ? null : 'unidade')} className="filter-button">
+              Unidade {dropdownAberto === 'unidade' ? '▲' : '▼'}
             </button>
             {dropdownAberto && (
               <div className="filter-options-dropdown">
-                {filterOptions[dropdownAberto].map(option=>(
-                  <div key={option} onClick={()=>{setFiltroAtivo({tipo:dropdownAberto, valor:option}); setDropdownAberto(null)}} className="filter-option">{option}</div>
+                {filterOptions[dropdownAberto].map(option => (
+                  <div key={option} onClick={() => { setFiltroAtivo({ tipo: dropdownAberto, valor: option }); setDropdownAberto(null) }} className="filter-option">{option}</div>
                 ))}
               </div>
             )}
           </div>
         </div>
-        <button className="btn-darkmode" onClick={()=>setDarkMode(!darkMode)}>{darkMode?"Modo Claro":"Modo Escuro"}</button>
+        <button className="btn-darkmode" onClick={() => setDarkMode(!darkMode)}>{darkMode ? "Modo Claro" : "Modo Escuro"}</button>
       </header>
 
       <main className="app-main">
@@ -189,25 +201,25 @@ function Catalogo({ username }) {
 
         <h2>Intelbras</h2>
         <div className="grid-container">
-          {produtosIntelbrasFiltrados.length>0 ? produtosIntelbrasFiltrados.map(p=>(
-            <CardProduto key={`intelbras-${p.codigo}`} produto={p} tipo="intelbras" refsMap={refsMap}/>
+          {produtosIntelbrasFiltrados.length > 0 ? produtosIntelbrasFiltrados.map(p => (
+            <CardProduto key={`intelbras-${p.codigo}`} produto={p} tipo="intelbras" refsMap={refsMap} />
           )) : <p className="no-products">Nenhum produto Intelbras encontrado.</p>}
         </div>
 
         <h2>PPA</h2>
         <div className="grid-container">
-          {produtosPPAFiltrados.length>0 ? produtosPPAFiltrados.map((p,i)=>(
-            <CardProduto key={`ppa-${i}`} produto={p} tipo="ppa" refsMap={refsMap}/>
+          {produtosPPAFiltrados.length > 0 ? produtosPPAFiltrados.map((p, i) => (
+            <CardProduto key={`ppa-${i}`} produto={p} tipo="ppa" refsMap={refsMap} />
           )) : <p className="no-products">Nenhum produto PPA encontrado.</p>}
         </div>
       </main>
 
-      <button className="chat-toggle" onClick={()=>setChatAberto(!chatAberto)}>💬</button>
+      <button className="chat-toggle" onClick={() => setChatAberto(!chatAberto)}>💬</button>
       {chatAberto && (
         <div className="chat-popup">
           <div className="chat-popup-header">
             <h3>Assistente de Produtos 🤖</h3>
-            <button onClick={()=>setChatAberto(false)}>✖</button>
+            <button onClick={() => setChatAberto(false)}>✖</button>
           </div>
           {/* 🔹 Passe a prop 'username' para o ChatAssistente */}
           <ChatAssistente username={username} />
@@ -221,26 +233,26 @@ function Catalogo({ username }) {
 // Login Page
 // ============================
 function LoginPage({ onLogin }) {
-  const [username,setUsername] = useState('');
-  const [password,setPassword] = useState('');
-  const [error,setError] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
-    try{
-      const response = await fetch('http://localhost:5000/api/login',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({username,password})
+    try {
+      const response = await fetch('http://localhost:5000/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
       });
       const data = await response.json();
-      if(response.ok && data.success){
+      if (response.ok && data.success) {
         onLogin(data);
       } else {
         setError('Usuário ou senha incorretos.');
       }
-    } catch(err){
+    } catch (err) {
       console.error(err);
       setError('Erro de conexão.');
     }
@@ -251,8 +263,8 @@ function LoginPage({ onLogin }) {
       <h2>Login</h2>
       <form onSubmit={handleLogin} className="login-form">
         {error && <p className="login-error">{error}</p>}
-        <input type="text" placeholder="Usuário" value={username} onChange={(e)=>setUsername(e.target.value)} />
-        <input type="password" placeholder="Senha" value={password} onChange={(e)=>setPassword(e.target.value)} />
+        <input type="text" placeholder="Usuário" value={username} onChange={(e) => setUsername(e.target.value)} />
+        <input type="password" placeholder="Senha" value={password} onChange={(e) => setPassword(e.target.value)} />
         <button type="submit">Entrar</button>
       </form>
     </div>
@@ -263,23 +275,23 @@ function LoginPage({ onLogin }) {
 // AppContent
 // ============================
 function AppContent() {
-  const [isLoggedIn,setIsLoggedIn] = useState(false);
-  const [isAdmin,setIsAdmin] = useState(false);
-  const [username,setUsername] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [username, setUsername] = useState('');
   const navigate = useNavigate();
 
-  useEffect(()=>{
+  useEffect(() => {
     const storedUsername = localStorage.getItem('username');
-    const storedIsAdmin = localStorage.getItem('isAdmin')==='true';
-    if(storedUsername){
+    const storedIsAdmin = localStorage.getItem('isAdmin') === 'true';
+    if (storedUsername) {
       setUsername(storedUsername);
       setIsAdmin(storedIsAdmin);
       setIsLoggedIn(true);
     }
-  },[]);
+  }, []);
 
   const handleLoginSuccess = (data) => {
-    localStorage.setItem('isLoggedIn','true');
+    localStorage.setItem('isLoggedIn', 'true');
     localStorage.setItem('isAdmin', data.isAdmin);
     localStorage.setItem('username', data.username);
     setIsLoggedIn(true);
@@ -296,7 +308,7 @@ function AppContent() {
     navigate('/');
   };
 
-  if(!isLoggedIn) return <LoginPage onLogin={handleLoginSuccess} />;
+  if (!isLoggedIn) return <LoginPage onLogin={handleLoginSuccess} />;
 
   return (
     <>
@@ -329,7 +341,7 @@ function AppContent() {
 // ============================
 // App principal
 // ============================
-export default function App(){
+export default function App() {
   return (
     <Router>
       <AppContent />
