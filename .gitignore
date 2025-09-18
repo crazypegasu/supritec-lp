@@ -26,7 +26,7 @@ dist-ssr
 # env da chave do gpt
 .env
 
-README.md
+# README.md
 
 # Banco de dados local (SQLite)
 database/users.db
