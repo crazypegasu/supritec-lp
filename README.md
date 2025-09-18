@@ -1,6 +1,7 @@
 # 🚀 Catálogo Interativo de Produtos - Supritec 🦅
 
 ![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)
 ![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
@@ -27,8 +28,8 @@ Landing page interativa para consulta de produtos Intelbras e PPA. A aplicação
 | Frontend      | Backend       | Banco de Dados | Outros                 |
 |---------------|---------------|----------------|------------------------|
 | React.js      | Node.js       | SQLite         | JSON para catálogo     |
-| CSS           | Express.js    |                | Git para versionamento |
-|               | Python (PLN)  |                |                        |
+| Vite          | Express.js    |                | Git para versionamento |
+| CSS           | Python (PLN)  |                |                        |
 
 ---
 
@@ -47,6 +48,7 @@ Landing page interativa para consulta de produtos Intelbras e PPA. A aplicação
 - │ ├─ `Comparador.jsx` # Comparador automático
 - │ └─ `styles.css` # Estilos da aplicação
 - ├─ `package.json`
+- ├─ `vite.config.js` # Arquivo de configuração do Vite
 - └─ `README.md`
 
 ---
