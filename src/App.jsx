@@ -4,6 +4,8 @@ import ChatAssistente from "./ChatAssistente.jsx";
 import Comparador from "./Comparador.jsx";
 import AdminDashboard from "./adminDashboard.jsx";
 import AdminLogin from "./AdminLogin.jsx";
+import ComparadorDatasheet from "./components/ComparadorDatasheet.jsx";
+import './styles.css'; 
 
 // ============================
 // CardProduto
@@ -13,15 +15,14 @@ const CardProduto = ({ produto, tipo, refsMap }) => {
   const descricao = isIntelbras ? produto.descricao : produto.Descrição;
   const codigo = isIntelbras ? produto.codigo : produto.Código;
   const segmento = isIntelbras ? produto.segmento : null;
-  const tabela = isIntelbras ? produto.tabela : null; // 🔹 Adicionado: Extrai a propriedade 'tabela'
+  const tabela = isIntelbras ? produto.tabela : null;
   const psd = isIntelbras ? produto.psd : produto["Valor Tabela"];
   const pscf = isIntelbras ? produto.pscf : produto["PSCF"] || null;
   const status = isIntelbras ? produto.status : produto.Status || null;
   const encerrado = status === "encerrado";
 
-  // Função para formatar o texto dos termos específicos
   const formatarTermo = (text) => {
-    const termosNegrito = ["Distribuição", "Display Profissionais", "Projetos Especiais", "Software", "TMR"];
+    const termosNegrito = ["Distribuição", "Displays Profissionais", "Projetos Especiais", "Software", "TMR"];
     if (termosNegrito.includes(text)) {
       return <strong>{text}</strong>;
     }
@@ -56,13 +57,8 @@ Status: ${encerrado ? "Encerrado" : "Ativo"}`;
     >
       <h3 className="card-titulo">{descricao}</h3>
       <p className="card-codigo">Código: {codigo}</p>
-      
-      {/* 🔹 Adicionado: Renderiza a tabela com a formatação em negrito */}
       {tabela && <p className="card-tabela">Linha: {formatarTermo(tabela)}</p>}
-      
-      {/* 🔹 O Segmento continua sendo renderizado na linha abaixo, sem alterações */}
       {segmento && <p className="card-segmento">{segmento}</p>}
-
       {encerrado ? (
         <div>
           <p className="substituto">Produto encerrado.</p>
@@ -89,7 +85,6 @@ Status: ${encerrado ? "Encerrado" : "Ativo"}`;
           {pscf && <p className="preco-pscf">PSCF: R$ {pscf}</p>}
         </div>
       )}
-
       <button className="btn-copiar" onClick={copiarInfo}>
         Copiar Info
       </button>
@@ -100,7 +95,6 @@ Status: ${encerrado ? "Encerrado" : "Ativo"}`;
 // ============================
 // Catalogo
 // ============================
-// 🔹 Adicione 'username' como uma prop aqui
 function Catalogo({ username }) {
   const [produtosIntelbras, setProdutosIntelbras] = useState([]);
   const [produtosPPA, setProdutosPPA] = useState([]);
@@ -108,7 +102,7 @@ function Catalogo({ username }) {
   const [busca, setBusca] = useState("");
   const [chatAberto, setChatAberto] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
-  const [filtroAtivo, setFiltroAtivo] = useState({ tipo: null, valor: null });
+  const [filtrosAtivos, setFiltrosAtivos] = useState({ segmento: [], unidade: [], tabela: [] });
   const [dropdownAberto, setDropdownAberto] = useState(null);
 
   const refsMap = useRef({});
@@ -123,7 +117,8 @@ function Catalogo({ username }) {
       "Racks", "Radiocomunicadores", "Redes Empresariais", "Redes Opticas", "Sensores",
       "Sistemas Automatizados", "Solar Off Grid"
     ],
-    unidade: ["COMUNICACAO", "CONSUMO", "CONTROLE DE ACESSOS", "ENERGIA", "ENERGIA SOLAR", "REDES", "SEGURANCA ELETRONICA"]
+    unidade: ["COMUNICACAO", "CONSUMO", "CONTROLE DE ACESSOS", "ENERGIA", "ENERGIA SOLAR", "REDES", "SEGURANCA ELETRONICA"],
+    tabela: ["Displays Profissionais", "Projetos Especiais", "Software", "TMR"]
   };
 
   useEffect(() => {
@@ -132,30 +127,63 @@ function Catalogo({ username }) {
     fetch("http://localhost:5000/api/encerrados").then(res => res.json()).then(setEncerrados);
   }, []);
 
-  const handleClearFilter = () => setFiltroAtivo({ tipo: null, valor: null });
+  const toggleFiltro = (tipo, valor) => {
+    setFiltrosAtivos((prev) => {
+      const jaSelecionado = prev[tipo].includes(valor);
+      return {
+        ...prev,
+        [tipo]: jaSelecionado ? prev[tipo].filter(v => v !== valor) : [...prev[tipo], valor]
+      };
+    });
+  };
+
+  const limparFiltros = () => setFiltrosAtivos({ segmento: [], unidade: [], tabela: [] });
 
   const filtrarProdutos = (produtos, tipo) => {
     const termoBusca = busca.toLowerCase();
     return produtos.filter((p) => {
       let correspondeBusca = false;
       let correspondeFiltro = true;
+
       if (tipo === "intelbras") {
-        correspondeBusca = p.descricao?.toLowerCase().includes(termoBusca) || String(p.codigo).includes(termoBusca) || p.segmento?.toLowerCase().includes(termoBusca);
-        if (filtroAtivo.valor) {
-          let valorProduto = filtroAtivo.tipo === "segmento" ? p.segmento || "" : p.unidade || p.Unidade || "";
-          correspondeFiltro = valorProduto.toLowerCase() === filtroAtivo.valor.toLowerCase();
+        correspondeBusca =
+          p.descricao?.toLowerCase().includes(termoBusca) ||
+          String(p.codigo).includes(termoBusca) ||
+          p.segmento?.toLowerCase().includes(termoBusca);
+
+        // Segmento
+        if (filtrosAtivos.segmento.length > 0) {
+          correspondeFiltro = filtrosAtivos.segmento.includes(p.segmento);
+        }
+        // Unidade
+        if (correspondeFiltro && filtrosAtivos.unidade.length > 0) {
+          const unidadeProduto = p.unidade || p.Unidade || "";
+          correspondeFiltro = filtrosAtivos.unidade.includes(unidadeProduto);
+        }
+        // Tabela
+        if (correspondeFiltro && filtrosAtivos.tabela.length > 0) {
+          const tabelaProduto = p.tabela || "";
+          correspondeFiltro = filtrosAtivos.tabela.includes(tabelaProduto);
         }
       } else {
-        correspondeBusca = p.Descrição?.toLowerCase().includes(termoBusca) || String(p.Código).includes(termoBusca);
+        correspondeBusca =
+          p.Descrição?.toLowerCase().includes(termoBusca) ||
+          String(p.Código).includes(termoBusca);
       }
-      return (termoBusca === "" || correspondeBusca) && (!filtroAtivo.valor || correspondeFiltro);
+
+      return (termoBusca === "" || correspondeBusca) && correspondeFiltro;
     });
   };
 
   const produtosIntelbrasComEncerrados = produtosIntelbras.map((p) => {
     const enc = encerrados.find(e => String(e["Código Produto"]) === String(p.codigo));
     if (enc) {
-      return { ...p, status: "encerrado", substituto: enc["Substituto Direto"] !== "-" ? enc["Substituto Direto"] : null, indicacao: enc["Indicação"] || null };
+      return {
+        ...p,
+        status: "encerrado",
+        substituto: enc["Substituto Direto"] !== "-" ? enc["Substituto Direto"] : null,
+        indicacao: enc["Indicação"] || null
+      };
     }
     return p;
   });
@@ -163,42 +191,70 @@ function Catalogo({ username }) {
   const produtosIntelbrasFiltrados = filtrarProdutos(produtosIntelbrasComEncerrados, "intelbras");
   const produtosPPAFiltrados = filtrarProdutos(produtosPPA, "ppa");
 
-  produtosIntelbrasComEncerrados.forEach(p => { if (!refsMap.current[p.codigo]) refsMap.current[p.codigo] = React.createRef(); });
-  produtosPPA.forEach(p => { if (!refsMap.current[p.Código]) refsMap.current[p.Código] = React.createRef(); });
+  produtosIntelbrasComEncerrados.forEach(p => {
+    if (!refsMap.current[p.codigo]) refsMap.current[p.codigo] = React.createRef();
+  });
+  produtosPPA.forEach(p => {
+    if (!refsMap.current[p.Código]) refsMap.current[p.Código] = React.createRef();
+  });
 
   return (
     <div className={`app-container ${darkMode ? "dark" : ""}`}>
       <header className="app-header">
         <h1>Catálogo de Produtos</h1>
         <div className="search-and-filter-container">
-          <input type="text" placeholder="Buscar produto..." value={busca} onChange={(e) => setBusca(e.target.value)} />
+          <input
+            type="text"
+            placeholder="Buscar produto..."
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+          />
           <div className="filter-dropdown-container">
-            <button onClick={() => setDropdownAberto(dropdownAberto === 'segmento' ? null : 'segmento')} className="filter-button">
-              Segmento {dropdownAberto === 'segmento' ? '▲' : '▼'}
-            </button>
-            <button onClick={() => setDropdownAberto(dropdownAberto === 'unidade' ? null : 'unidade')} className="filter-button">
-              Unidade {dropdownAberto === 'unidade' ? '▲' : '▼'}
-            </button>
+            {["segmento", "unidade", "tabela"].map(tipo => (
+              <button
+                key={tipo}
+                onClick={() => setDropdownAberto(dropdownAberto === tipo ? null : tipo)}
+                className="filter-button"
+              >
+                {tipo.charAt(0).toUpperCase() + tipo.slice(1)} {dropdownAberto === tipo ? "▲" : "▼"}
+              </button>
+            ))}
             {dropdownAberto && (
               <div className="filter-options-dropdown">
                 {filterOptions[dropdownAberto].map(option => (
-                  <div key={option} onClick={() => { setFiltroAtivo({ tipo: dropdownAberto, valor: option }); setDropdownAberto(null) }} className="filter-option">{option}</div>
+                  <div
+                    key={option}
+                    onClick={() => toggleFiltro(dropdownAberto, option)}
+                    className={`filter-option ${filtrosAtivos[dropdownAberto].includes(option) ? "selected" : ""}`}
+                  >
+                    {option} {filtrosAtivos[dropdownAberto].includes(option) ? "✔" : ""}
+                  </div>
                 ))}
               </div>
             )}
           </div>
         </div>
-        <button className="btn-darkmode" onClick={() => setDarkMode(!darkMode)}>{darkMode ? "Modo Claro" : "Modo Escuro"}</button>
+        <button className="btn-darkmode" onClick={() => setDarkMode(!darkMode)}>
+          {darkMode ? "Modo Claro" : "Modo Escuro"}
+        </button>
       </header>
 
-      <main className="app-main">
-        {filtroAtivo.valor && (
-          <div className="filter-status">
-            Filtrando por: <span className="filter-status-value">{filtroAtivo.valor}</span>
-            <button onClick={handleClearFilter} className="clear-filter-button">✖ Limpar</button>
-          </div>
-        )}
+      {Object.values(filtrosAtivos).some(arr => arr.length > 0) && (
+        <div className="filter-status">
+          <span>Filtros ativos:</span>
+          {Object.entries(filtrosAtivos).map(([tipo, valores]) =>
+            valores.map(v => (
+              <span key={`${tipo}-${v}`} className="filter-tag">
+                {tipo}: {v}
+                <button onClick={() => toggleFiltro(tipo, v)}>❌</button>
+              </span>
+            ))
+          )}
+          <button onClick={limparFiltros} className="clear-filter-button">Limpar todos</button>
+        </div>
+      )}
 
+      <main className="app-main">
         <h2>Intelbras</h2>
         <div className="grid-container">
           {produtosIntelbrasFiltrados.length > 0 ? produtosIntelbrasFiltrados.map(p => (
@@ -221,7 +277,6 @@ function Catalogo({ username }) {
             <h3>Assistente de Produtos 🤖</h3>
             <button onClick={() => setChatAberto(false)}>✖</button>
           </div>
-          {/* 🔹 Passe a prop 'username' para o ChatAssistente */}
           <ChatAssistente username={username} />
         </div>
       )}
@@ -230,7 +285,7 @@ function Catalogo({ username }) {
 }
 
 // ============================
-// Login Page
+// LoginPage
 // ============================
 function LoginPage({ onLogin }) {
   const [username, setUsername] = useState('');
@@ -317,6 +372,7 @@ function AppContent() {
           <nav className="app-nav">
             <Link to="/">🏠 Catálogo</Link>
             <Link to="/comparador">🔎 Comparador</Link>
+            <Link to="/comparador-datasheet">📄 Comparar Câmeras</Link>
             {isAdmin && <Link to="/admin">⚙️ Admin</Link>}
           </nav>
           <div className="user-info">
@@ -328,9 +384,9 @@ function AppContent() {
 
       <main>
         <Routes>
-          {/* 🔹 Passe a prop 'username' para o Catalogo */}
           <Route path="/" element={<Catalogo username={username} />} />
           <Route path="/comparador" element={<Comparador />} />
+          <Route path="/comparador-datasheet" element={<ComparadorDatasheet />} />
           <Route path="/admin" element={isAdmin ? <AdminDashboard username={username} isAdmin={isAdmin} onLogout={handleLogout} /> : <div className="acesso-negado">Você não tem permissão de administrador.</div>} />
         </Routes>
       </main>

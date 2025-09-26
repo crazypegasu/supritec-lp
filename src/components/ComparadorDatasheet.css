@@ -1,0 +1,126 @@
+/* Em: src/components/ComparadorDatasheet/ComparadorDatasheet.css (Versão Final Limpa) */
+
+.comparador-container {
+  max-width: 1100px; 
+  margin: 2rem auto;
+  padding: 2rem;
+  font-family: sans-serif;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+}
+
+.dropzone {
+  border: 2px dashed #007bff;
+  border-radius: 8px;
+  padding: 25px;
+  text-align: center;
+  cursor: pointer;
+  background-color: #f9f9f9;
+  color: #555;
+  transition: background-color 0.3s ease;
+  margin-top: 1.5rem;
+}
+
+.dropzone.active {
+  background-color: #e9f5ff;
+}
+
+.file-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 15px;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.compare-button {
+  display: block;
+  width: 100%;
+  padding: 15px;
+  margin-top: 20px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.compare-button:disabled {
+  background-color: #a0a0a0;
+  cursor: not-allowed;
+}
+
+.compare-button:not(:disabled):hover {
+  background-color: #0056b3;
+}
+
+.error-message {
+  color: #d93025;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.resultado-log {
+  border: 1px solid #e0e0e0;
+  padding: 1.5rem 2rem;
+  margin-top: 2rem;
+  background: #fdfdfd;
+  border-radius: 8px;
+  text-align: left;
+  overflow-x: auto; 
+}
+
+/* === ESTILOS PARA O CONTEÚDO DA RESPOSTA (TABELA, TÍTULOS, ETC) === */
+
+.resultado-log h2, .resultado-log h3, .resultado-log h4 {
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 10px;
+  margin: 2rem 0 1.5rem 0;
+  color: #333;
+}
+
+.resultado-log table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.95rem;
+}
+
+.resultado-log th,
+.resultado-log td {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  text-align: left;
+  vertical-align: top;
+  word-wrap: break-word;
+}
+
+.resultado-log th {
+  background-color: #f2f2f2;
+  font-weight: 600;
+}
+
+.resultado-log td:first-child {
+  font-weight: bold;
+  background-color: #f9f9f9;
+  width: 25%;
+}
+
+/* ✨ EFEITO EXTRA: Destaca a linha da tabela ao passar o mouse ✨ */
+.resultado-log tbody tr:hover {
+  background-color: #eef6ff;
+}
+
+.resultado-log ul {
+  padding-left: 20px;
+  margin-top: 0.5rem;
+}
+
+.resultado-log li {
+  margin-bottom: 0.75rem;
+  line-height: 1.6;
+}

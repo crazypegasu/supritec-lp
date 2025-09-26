@@ -668,3 +668,77 @@ body {
   color: var(--gray-600);
   margin-bottom: 0.5rem;
 }
+
+.card-tabela {
+  font-size: 1.rem;
+  color: var(--gray-600);
+  margin-bottom: 0.5rem;
+}
+/* ================= FILTROS ATIVOS (SEÇÃO ATUALIZADA) ================= */
+
+/* O container principal dos filtros */
+.filter-status {
+  display: flex;            /* ATIVA O FLEXBOX: alinha os itens em uma linha */
+  justify-content: center;  /* Centraliza o conjunto de filtros na tela */
+  align-items: center;      /* Alinha os itens verticalmente (útil se tiverem alturas diferentes) */
+  flex-wrap: wrap;          /* Permite que os filtros quebrem para a próxima linha se não houver espaço */
+  gap: 12px;                /* ADICIONA ESPAÇO entre cada item (tags e botões) */
+  padding: 12px 20px;       /* Adiciona um preenchimento interno para não ficar colado nas bordas */
+  margin-top: 0;            /* Remove a margem superior para unir ao header */
+  background-color: #f8f8f8; /* Um fundo levemente cinza para destacar a área */
+  border-bottom: 1px solid #ddd; /* Linha sutil de separação */
+}
+
+/* A tag individual de cada filtro */
+.filter-tag {
+  display: inline-flex;     /* Garante o alinhamento perfeito do texto e do 'X' */
+  align-items: center;
+  gap: 8px;                 /* Espaço entre o texto do filtro e o botão 'X' */
+  background-color: var(--green-100);
+  color: var(--green-700);
+  padding: 6px 12px;
+  border-radius: 20px;      /* Deixa as bordas bem arredondadas, criando o efeito "pill" */
+  font-weight: 500;
+  font-size: 0.85rem;
+  border: 1px solid var(--green-600);
+}
+
+/* O botão 'X' para remover o filtro */
+.filter-tag button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--red-600);
+  color: white;
+  border: none;
+  border-radius: 50%;       /* Deixa o botão 'X' perfeitamente redondo */
+  width: 20px;
+  height: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.filter-tag button:hover {
+  background-color: #b91c1c; /* Vermelho mais escuro ao passar o mouse */
+}
+
+/* Botão para limpar todos os filtros */
+.clear-filter-button {
+  margin-left: 10px;        /* Adiciona uma margem extra para separá-lo das tags */
+  padding: 6px 12px;
+  border: 1px solid var(--gray-500);
+  border-radius: 6px;
+  background-color: transparent;
+  color: var(--gray-600);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.clear-filter-button:hover {
+  background-color: var(--gray-600);
+  color: white;
+}
